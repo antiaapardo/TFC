@@ -1,0 +1,30 @@
+/* Seleccionamos TODO el documento */
+:root, body, #app {
+  font-family: 'Nunito', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Forzamos a que botones, inputs y títulos también la hereden */
+h1, h2, h3, h4, h5, h6, button, input, textarea, select {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+/* El toque para los popups del mapa que a veces son rebeldes */
+.leaflet-container {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+/* Esto pinta TODA la pantalla de amarillo pastel */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #fef9e7 !important; /* Amarillo pastel suave */
+  min-height: 100vh;
+  width: 100%;
+}
+
+#app {
+  background-color: #fef9e7;
+  min-height: 100vh;
+}
