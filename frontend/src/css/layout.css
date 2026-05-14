@@ -1,0 +1,18 @@
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: var(--white);
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.content-split {
+  display: grid;
+  grid-template-columns: 1fr 480px; /* Lista a la izquierda, mapa a la derecha */
+  height: calc(100vh - 80px);
+  overflow: hidden;
+}

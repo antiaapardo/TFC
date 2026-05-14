@@ -1,0 +1,51 @@
+/* src/css/Favoritos.css */
+
+.favoritos-container {
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.favoritos-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.favoritos-title {
+  font-family: 'Nunito', sans-serif;
+  color: #222;
+  margin: 0;
+}
+
+.volver-link {
+  text-decoration: none;
+  color: #E10818; /* Rojo marca MEC */
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  transition: opacity 0.2s;
+}
+
+.volver-link:hover {
+  opacity: 0.8;
+}
+
+.favoritos-empty-state {
+  text-align: center;
+  padding: 50px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  color: #666;
+}
+
+.favoritos-empty-state h3 {
+  color: #112A46;
+  margin-bottom: 10px;
+}
+
+/* Solo añadimos ancho 100% si events-grid de Home.css no lo trae por defecto */
+.favoritos-grid {
+  padding: 0;
+  width: 100%;
+}

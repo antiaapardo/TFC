@@ -1,0 +1,76 @@
+/* src/css/SearchBar.css */
+.search-container { 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  margin: 20px 0; 
+  font-family: 'Nunito', sans-serif;
+}
+
+.search-bar { 
+  display: flex; 
+  align-items: center; 
+  background: white; 
+  padding: 8px 15px 8px 25px; 
+  border-radius: 100px; 
+  border: 1px solid #ddd; 
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08); 
+  transition: box-shadow 0.2s ease;
+}
+
+.search-bar:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.search-item {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+}
+
+.search-item label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #222;
+  margin-left: 4px;
+}
+
+.search-item select, 
+.search-item input {
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  color: #717171;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.divider { 
+  width: 1px; 
+  height: 35px; 
+  background: #f1f1f1; 
+  margin: 0 15px; 
+}
+
+.search-btn { 
+  background: var(--mec-red); 
+  color: white; 
+  border: none; 
+  width: 45px; 
+  height: 45px; 
+  border-radius: 50%; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.search-btn:hover {
+  transform: scale(1.05);
+  /* CORREGIDO: Usamos el tono oscuro del rojo MEC en lugar del verde/amarillo */
+  background-color: #b90614; 
+}

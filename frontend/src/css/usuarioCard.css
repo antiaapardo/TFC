@@ -1,0 +1,96 @@
+/* src/css/UsuarioCard.css */
+.profile-card {
+  background: white;
+  border-radius: 24px;
+  padding: 40px 24px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+  border: 1px solid #f0f0f0;
+  font-family: 'Nunito', sans-serif;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+}
+
+.avatar-main {
+  width: 100%;
+  height: 100%;
+  /* Degradado usando el rojo corporativo MEC */
+  background: linear-gradient(135deg, var(--mec-red), #b90614);
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 800;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 15px rgba(225, 8, 24, 0.2);
+}
+
+.change-photo-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.change-photo-btn:hover {
+  transform: scale(1.1);
+}
+
+.user-name { 
+  margin: 0; 
+  font-size: 1.5rem; 
+  font-weight: 800;
+  color: var(--mec-text); 
+}
+
+.user-badge { 
+  display: inline-block;
+  background: #fef1f1; /* Fondo rojizo muy suave */
+  color: var(--mec-red);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 10px 0;
+}
+
+.user-email { 
+  color: var(--mec-gray); 
+  font-size: 0.9rem; 
+  margin-bottom: 25px; 
+}
+
+.primary-outline-btn {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--mec-red);
+  background: transparent;
+  color: var(--mec-red);
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-outline-btn:hover { 
+  background: var(--mec-red); 
+  color: white; 
+}

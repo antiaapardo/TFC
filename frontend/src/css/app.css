@@ -1,0 +1,153 @@
+#app { 
+  font-family: 'Nunito', sans-serif; /* Usamos la tipografía de MEC */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 20px; 
+  border-bottom: 1px solid #eee; 
+}
+
+.logo-area { display: flex; align-items: center; gap: 15px; }
+.main-logo { height: 60px; border-radius: 12px; }
+
+.title-info h1 { 
+  margin: 0; 
+  font-size: 1.5rem; 
+  color: var(--mec-text);
+  font-weight: 800;
+}
+
+.subtitle { 
+  margin: 0; 
+  font-size: 0.9rem; 
+  color: var(--mec-gray); 
+}
+
+.nav-user { 
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
+}
+
+.nav-btn { 
+  background: none; 
+  border: none; 
+  font-size: 24px; 
+  cursor: pointer; 
+  transition: transform 0.2s ease;
+}
+
+.nav-btn:hover {
+  transform: scale(1.1);
+}
+
+.profile-circle { 
+  text-decoration: none;
+  width: 40px; 
+  height: 40px; 
+  background: var(--mec-red); /* Usamos el rojo MEC */
+  color: white; 
+  border-radius: 50%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: bold; 
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(225, 218, 8, 0.2);
+}
+
+.profile-circle:hover {
+  transform: scale(1.05);
+}
+
+/* ==========================================
+   MENÚ DESPLEGABLE (NAVBAR)
+   ========================================== */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 60px; /* Ajusta este valor si tu header es más alto/bajo */
+  right: 0;
+  background-color: white;
+  min-width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Nunito', sans-serif;
+  animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header {
+  padding: 15px;
+  background-color: #f8f9fc;
+}
+
+.dropdown-header strong {
+  display: block;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.dropdown-header span {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-menu hr {
+  margin: 0;
+  border: none;
+  border-top: 1px solid #eee;
+}
+
+.dropdown-item {
+  padding: 12px 15px;
+  text-decoration: none;
+  color: #333;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+  font-family: 'Nunito', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+.logout-item {
+  color: #E10818;
+}
+
+.logout-item:hover {
+  background-color: #fdedec;
+}

@@ -1,0 +1,51 @@
+/* src/css/MapaInteractivo.css */
+
+#map-container {
+  height: 500px; /* ¡Imprescindible! */
+  width: 100%;
+  border-radius: 12px;
+  z-index: 1;
+}
+
+/* Como este CSS se importa globalmente, no necesitamos :deep().
+  Leaflet inyecta sus clases directamente en el DOM. 
+*/
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important; /* Aquí sí es lícito usar !important para sobreescribir librerías de terceros */
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px !important;
+  line-height: 1.4;
+}
+
+.leaflet-container {
+  font-family: 'Nunito', sans-serif;
+  background-color: #f0f0f0;
+}
+
+/* Clases personalizadas para el contenido de tu Popup */
+.custom-popup {
+  font-family: 'Nunito', sans-serif;
+  text-align: left;
+}
+
+.popup-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.popup-date {
+  color: #555;
+  font-weight: 600;
+}
+
+.popup-address {
+  color: #777;
+  display: block;
+  margin-top: 5px;
+}
