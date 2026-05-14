@@ -1,5 +1,4 @@
 <script setup>
-// Importamos el CSS específico
 import '../css/BotonPublicar.css'
 
 defineProps({

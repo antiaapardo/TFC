@@ -8,7 +8,8 @@ const mainStore = useMainStore()
 
 const isSubmitting = ref(false)
 const mensaje = ref('')
-const tipoMensaje = ref('') // 'error' o 'success'
+const tipoMensaje = ref('')
+const selectedFiles = ref([])
 
 onMounted(() => {
   if (mainStore.categorias.length === 0) {
@@ -16,7 +17,6 @@ onMounted(() => {
   }
 })
 
-// CORREGIDO: id_usuario ahora extrae el ID numérico correcto del getter
 const form = reactive({
   id_usuario: mainStore.userId, 
   titulo: '',
@@ -28,6 +28,13 @@ const form = reactive({
   descripcion: 'Nuevo mercadillo de economía circular.', 
   foto_url: '' 
 })
+
+const onFilesSelected = (event) => {
+  const files = Array.from(event.target.files)
+  
+  // Filtramos para asegurarnos de que solo sean imágenes
+  selectedFiles.value = files.filter(file => file.type.startsWith('image/'))
+}
 
 const obtenerCoordenadas = async (direccion) => {
   try {
@@ -60,34 +67,44 @@ const obtenerCoordenadas = async (direccion) => {
   return null
 }
 
+// ¡AQUÍ ESTABA EL FALLO! Faltaba envolver esto en la función publicar
 const publicar = async () => {
   isSubmitting.value = true
   mensaje.value = ''
   
+  // 0. Sacamos las coordenadas antes de nada
   const coords = await obtenerCoordenadas(form.direccion_texto)
-  
   if (coords) {
     form.latitud = coords.lat
     form.longitud = coords.lon
-  } else {
-    // MEJORA: Avisamos al usuario pero le dejamos continuar usando las coords por defecto de app.py
-    console.warn("No se encontraron coordenadas exactas para esa calle.")
   }
 
-  // ADAPTADO AL NUEVO PATRÓN DEL STORE
-  const exito = await mainStore.publicarEvento(form)
-  
-  if (exito) {
-    mensaje.value = '¡Mercadillo publicado con éxito!'
-    tipoMensaje.value = 'success'
+  // 1. Creamos el evento
+  const eventoCreado = await mainStore.publicarEvento(form)
+
+  if (eventoCreado && eventoCreado.id_evento) {
+    console.log(`✅ Mercadillo creado. ID: ${eventoCreado.id_evento}`);
+    console.log(`📸 Cantidad de fotos a subir: ${selectedFiles.value.length}`);
     
+    // 2. Subimos las fotos (SI HAY ALGUNA)
+    if (selectedFiles.value.length > 0) {
+      mensaje.value = 'Subiendo las fotos... ⏳'
+      tipoMensaje.value = 'success'
+      
+      // Llamamos a la función de subir imágenes
+      await mainStore.subirImagenesEvento(eventoCreado.id_evento, selectedFiles.value)
+      console.log("✅ Proceso de fotos terminado.");
+    }
+
+    mensaje.value = '¡Mercadillo publicado con éxito! 🎉'
+    tipoMensaje.value = 'success'
+  
     setTimeout(() => {
       emit('actualizar')
       emit('close')
     }, 1500)
   } else {
-    // Leemos el error oficial de Python almacenado en Pinia
-    mensaje.value = mainStore.lastError || 'Hubo un error al publicar.'
+    mensaje.value = 'Error al obtener el ID del mercadillo.'
     tipoMensaje.value = 'error'
   }
   
@@ -132,9 +149,16 @@ const publicar = async () => {
           <input v-model="form.fecha_inicio" type="date" required />
         </div>
         <div class="form-group">
-          <label>FOTO DEL MERCADILLO (URL)</label>
-          <input v-model="form.foto_url" type="url" placeholder="Ej. https://misitio.com/foto.jpg" />
-          <small class="help-text">Pega un enlace a una imagen para que tu mercadillo destaque.</small>
+            <label>Fotos del Mercadillo (Puedes elegir varias)</label>
+            <input 
+              type="file" 
+              accept="image/*" 
+              multiple 
+              @change="onFilesSelected" 
+            />
+            <small class="help-text" v-if="selectedFiles.length > 0">
+              Has seleccionado {{ selectedFiles.length }} imagen(es).
+            </small>
         </div>
 
         <div class="form-group">

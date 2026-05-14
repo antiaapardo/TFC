@@ -172,23 +172,47 @@ export const useMainStore = defineStore('main', {
         this.isLoading = false;
       }
     },
-
-    async publicarEvento(data, callback) {
+async publicarEvento(eventoData, callback) {
       this.isLoading = true;
       this.lastError = null;
       try {
-        const r = await axios.post(`${this.apiEndpoint}/eventos`, data);
-        if (r.data && r.data.success) {
-          await this.fetchEventos(); 
-          if (callback) callback({ type: 'success', msg: 'Mercadillo publicado con éxito' });
-          return true;
-        }
-        return false;
+        // 1. Mandamos los datos a Flask
+        const res = await axios.post(`${this.apiEndpoint}/eventos`, eventoData);
+        
+        // 2. Refrescamos la lista de eventos
+        await this.fetchEventos(); 
+        
+        if (callback) callback({ type: 'success', msg: 'Mercadillo publicado con éxito' });
+        
+        // 3. ¡LA MAGIA! 
+        // res.data.data es donde Python ha metido tu {"id_evento": X}
+        return res.data.data; 
+        
       } catch (error) {
-        this.lastError = manageErrors('publicarEvento', error, callback);
-        return false;
+        console.error("Error al publicar:", error);
+        this.lastError = "No se pudo crear el mercadillo.";
+        return null; 
       } finally {
         this.isLoading = false;
+      }
+    },
+    async subirImagenesEvento(idEvento, files) {
+      try {
+        const formData = new FormData();
+        
+        // Recorremos el array y metemos todas las imágenes bajo el mismo nombre: 'imagenes'
+        files.forEach(file => {
+          formData.append('imagenes', file); 
+        });
+
+        const res = await axios.post(`${this.apiEndpoint}/eventos/${idEvento}/imagenes`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        return true;
+      } catch (error) {
+        console.error("Error subiendo las imágenes:", error);
+        return false;
       }
     },
 
@@ -275,6 +299,28 @@ async subirAvatar(file) {
         return true;
       } catch (error) {
         this.lastError = manageErrors('subirAvatar', error);
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async eliminarAvatar() {
+      this.isLoading = true;
+      this.lastError = null;
+      try {
+        // 1. Le decimos al backend que borre la foto de la base de datos
+        await axios.delete(`${this.apiEndpoint}/usuarios/${this.currentUser.id_usuario}/avatar`);
+
+        // 2. Borramos la foto de la memoria de Vue
+        this.currentUser.foto_url = null;
+        
+        // 3. Actualizamos el LocalStorage para que no vuelva a aparecer al hacer F5
+        localStorage.setItem('mec_user', JSON.stringify(this.currentUser));
+        
+        return true;
+      } catch (error) {
+        console.error("Error al eliminar el avatar:", error);
+        this.lastError = "Error de conexión al eliminar la foto.";
         return false;
       } finally {
         this.isLoading = false;

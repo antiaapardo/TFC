@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useMainStore } from '../stores/main'
-// Ya no necesitamos useRouter ni UsuarioCard aquí
+import ConfirmModal from '../components/ModalConfirm.vue'
 
 import EventoCard from '../components/EventoCard.vue'
 import BotonPublicar from '../components/BotonPublicar.vue'
@@ -143,22 +143,15 @@ const confirmarBorrado = async () => {
       />
 
       <div v-if="mostrarConfirmacion && esOrganizador" class="confirm-overlay">
-        <div class="confirm-card">
-          <div class="confirm-icon">⚠️</div>
-          <h3>¿Eliminar mercadillo?</h3>
-          <p>Esta acción no se puede deshacer. Desaparecerá de tu perfil y del mapa principal.</p>
-          
-          <div v-if="errorBorrado" class="error-msg" style="margin-bottom: 15px;">
-            {{ errorBorrado }}
-          </div>
-
-          <div class="confirm-actions">
-            <button class="btn-cancel" @click="cancelarBorrado">Cancelar</button>
-            <button class="btn-danger" @click="confirmarBorrado">
-              {{ mainStore.isLoading ? 'Eliminando...' : 'Sí, eliminar' }}
-            </button>
-          </div>
-        </div>
+      <ConfirmModal 
+        v-if="mostrarConfirmacion && esOrganizador" 
+        titulo="¿Eliminar mercadillo?" 
+        mensaje="Esta acción no se puede deshacer. Desaparecerá de tu perfil y del mapa principal."
+        :error="errorBorrado"
+        :isLoading="mainStore.isLoading"
+        @confirmar="confirmarBorrado" 
+        @cancelar="cancelarBorrado" 
+      />
       </div>
 
     </main>

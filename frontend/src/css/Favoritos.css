@@ -1,5 +1,3 @@
-/* src/css/Favoritos.css */
-
 .favoritos-container {
   padding: 40px 20px;
   max-width: 1400px;
@@ -21,7 +19,7 @@
 
 .volver-link {
   text-decoration: none;
-  color: #E10818; /* Rojo marca MEC */
+  color: #E10818; 
   font-weight: 800;
   font-family: 'Nunito', sans-serif;
   transition: opacity 0.2s;
@@ -44,7 +42,7 @@
   margin-bottom: 10px;
 }
 
-/* Solo añadimos ancho 100% si events-grid de Home.css no lo trae por defecto */
+
 .favoritos-grid {
   padding: 0;
   width: 100%;

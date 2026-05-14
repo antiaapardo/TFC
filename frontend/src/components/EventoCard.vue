@@ -1,10 +1,8 @@
 <script setup>
 import { computed } from 'vue'
-import { useMainStore } from '../stores/main' // Importamos el store
+import { useMainStore } from '../stores/main'
 import noImagePlaceholder from '../assets/noImagen.png'
 import { CATEGORIAS_MEC } from '../constants/mercadillos'
-
-// Importamos el CSS específico
 import '../css/EventoCard.css'
 
 const props = defineProps({
@@ -13,7 +11,6 @@ const props = defineProps({
 
 const mainStore = useMainStore()
 
-// LÓGICA DE FAVORITOS (Reactiva a Pinia)
 const esFavorito = computed(() => {
   return mainStore.favoritos.some(f => f.id_evento === props.evento.id_evento)
 })
@@ -23,19 +20,15 @@ const toggleFavorito = () => {
 }
 
 const infoCategoria = computed(() => {
-  // 1. Buscamos la categoría en la lista oficial que nos bajamos de la Base de Datos
   const categoriaReal = mainStore.categorias.find(c => c.id_categoria == props.evento.id_categoria)
 
-  // 2. Si la encontramos, mostramos su nombre. 
   if (categoriaReal) {
     return { 
       nombre: categoriaReal.nombre, 
-      // Si tienes un color en CATEGORIAS_MEC puedes cogerlo así, si no, usamos el rojo MEC
       color: CATEGORIAS_MEC[props.evento.id_categoria]?.color || '#E10818' 
     }
   }
 
-  // 3. Fallback de seguridad por si hay algún error
   return { nombre: 'Evento', color: '#717171' }
 })
 
@@ -43,6 +36,11 @@ const formatearFecha = (fechaStr) => {
   if (!fechaStr) return ''
   return new Date(fechaStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
 }
+
+const imagenPortada = computed(() => {
+  if (!props.evento.foto_url) return noImagePlaceholder;
+  return props.evento.foto_url.split(',')[0];
+})
 </script>
 
 <template>
@@ -58,7 +56,7 @@ const formatearFecha = (fechaStr) => {
       </button>
 
       <img 
-        :src="evento.foto_url || noImagePlaceholder" 
+        :src="imagenPortada" 
         :alt="evento.titulo"
         class="evento-img"
       />

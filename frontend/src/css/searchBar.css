@@ -1,4 +1,4 @@
-/* src/css/SearchBar.css */
+
 .search-container { 
   display: flex; 
   justify-content: center; 
@@ -16,6 +16,11 @@
   border: 1px solid #ddd; 
   box-shadow: 0 3px 12px rgba(0,0,0,0.08); 
   transition: box-shadow 0.2s ease;
+  
+
+  height: 60px; 
+  max-height: 60px; 
+  box-sizing: border-box; 
 }
 
 .search-bar:hover {
@@ -71,6 +76,5 @@
 
 .search-btn:hover {
   transform: scale(1.05);
-  /* CORREGIDO: Usamos el tono oscuro del rojo MEC en lugar del verde/amarillo */
   background-color: #b90614; 
 }

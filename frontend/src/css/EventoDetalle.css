@@ -31,10 +31,10 @@
   border-color: #ccc;
 }
 
-/* LA MAGIA DEL GRID (2 COLUMNAS) */
+
 .hero-card {
   display: grid;
-  grid-template-columns: 45% 55%; /* 45% imagen, 55% texto */
+  grid-template-columns: 45% 55%;
   background: white;
   border-radius: 28px;
   overflow: hidden;
@@ -43,10 +43,10 @@
   min-height: 500px;
 }
 
-/* SECCIÓN IMAGEN */
+
 .image-section {
   position: relative;
-  background-color: #f8f9fc; /* Fondo suave por si la foto es pequeña */
+  background-color: #f8f9fc; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -72,18 +72,19 @@
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-/* SECCIÓN INFORMACIÓN */
+
 .info-section {
   padding: 50px;
   display: flex;
   flex-direction: column;
 }
 
-.title {
-  font-size: 2.5rem;
-  color: #2c3e50;
-  margin: 0 0 35px 0;
-  font-weight: 900;
+
+.evento-card .title {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem !important;
+  font-weight: 700;
+  color: #222;
   line-height: 1.2;
 }
 
@@ -143,7 +144,7 @@
 }
 
 .action-footer {
-  margin-top: auto; /* Empuja el botón al fondo si hay espacio */
+  margin-top: auto; 
   padding-top: 30px;
 }
 
@@ -176,21 +177,8 @@
   font-weight: bold;
 }
 
-/* RESPONSIVE PARA MÓVILES Y TABLETS PEQUEÑAS */
 @media (max-width: 900px) {
   .hero-card {
-    grid-template-columns: 1fr; /* Pasa a 1 sola columna */
-  }
-  
-  .image-section {
-    height: 300px; /* Limita la altura de la imagen en móvil */
-  }
-  
-  .info-section {
-    padding: 30px 20px;
-  }
-  
-  .title {
-    font-size: 2rem;
-  }
+    grid-template-columns: 1fr; 
+  }  
 }

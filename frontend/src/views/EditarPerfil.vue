@@ -2,8 +2,9 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
+import ConfirmModal from '../components/ModalConfirm.vue'
 
-// Imagen por defecto si el usuario no tiene foto
+import '../css/EditarPerfil.css';
 import defaultAvatar from '../assets/noImagen.png' 
 
 const router = useRouter()
@@ -11,12 +12,13 @@ const mainStore = useMainStore()
 
 const user = mainStore.currentUser
 
-// VARIABLES REACTIVAS PARA LA FOTO
 const fileInput = ref(null) 
 const selectedFile = ref(null) 
 const previewImage = ref(user?.foto_url || null) 
+const mostrarModalFoto = ref(false)
+const subiendoFoto = ref(false)
+const isMenuFotoOpen = ref(false)
 
-// FORMULARIO DE DATOS Y CONTRASEÑA
 const form = reactive({
   nombre_completo: user?.nombre_completo || '',
   email: user?.email || '',
@@ -31,10 +33,11 @@ const mensajeStatus = ref({ texto: '', tipo: '' })
 // LÓGICA DE FOTO DE PERFIL
 // ==========================================
 const triggerFileInput = () => {
+  isMenuFotoOpen.value = false // Cerramos el menú
   fileInput.value.click()
 }
 
-const onFileSelected = (event) => {
+const onFileSelected = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
@@ -47,41 +50,78 @@ const onFileSelected = (event) => {
     return
   }
 
-  selectedFile.value = file
-
+  // 1. Mostramos la foto al instante para que el usuario la vea rápido
   const reader = new FileReader()
-  reader.onload = (e) => {
-    previewImage.value = e.target.result 
-  }
+  reader.onload = (e) => { previewImage.value = e.target.result }
   reader.readAsDataURL(file)
+
+  // 2. ¡LA SUBIMOS DIRECTAMENTE!
+  subiendoFoto.value = true
+  isMenuFotoOpen.value = false // Cerramos el menú
+  mensajeStatus.value = { texto: 'Subiendo foto de perfil... ⏳', tipo: 'info' }
+
+  const exito = await mainStore.subirAvatar(file)
+
+  if (exito) {
+    mensajeStatus.value = { texto: '¡Foto de perfil actualizada al instante! 📸', tipo: 'exito' }
+    // Aseguramos que la previsualización usa la URL real del servidor
+    previewImage.value = mainStore.currentUser.foto_url 
+  } else {
+    mensajeStatus.value = { texto: mainStore.lastError || 'Error al subir la foto', tipo: 'error' }
+    // Si falla, volvemos a la foto que tenía antes
+    previewImage.value = mainStore.currentUser.foto_url || defaultAvatar
+  }
+
+  subiendoFoto.value = false
+  
+  // Limpiamos el input por si el usuario quiere volver a subir la misma foto luego
+  if (fileInput.value) fileInput.value.value = ''
+}
+
+const solicitarBorradoFoto = () => {
+  isMenuFotoOpen.value = false 
+  mostrarModalFoto.value = true 
+}
+
+const confirmarBorradoFoto = async () => {
+  console.log("👉 1. Botón del modal pulsado");
+  
+  // Comprobamos si la función existe en tu mainStore
+  if (typeof mainStore.eliminarAvatar !== 'function') {
+    console.error("❌ ERROR: La función eliminarAvatar NO existe en mainStore. ¡Revisa tu main.js!");
+    return;
+  }
+
+  console.log("👉 2. Llamando a la base de datos...");
+  const exito = await mainStore.eliminarAvatar()
+  
+  console.log("👉 3. Resultado:", exito);
+  if (exito) {
+    mensajeStatus.value = { texto: 'Foto eliminada con éxito ✨', tipo: 'exito' }
+    previewImage.value = null 
+    selectedFile.value = null
+  } else {
+    mensajeStatus.value = { texto: 'Error al eliminar la foto', tipo: 'error' }
+  }
+  
+  mostrarModalFoto.value = false // Cierra el modal
 }
 
 // ==========================================
 // LÓGICA DE ACTUALIZACIÓN DE PERFIL BÁSICO
 // ==========================================
+
 const handleUpdateInfo = async () => {
   mensajeStatus.value = { texto: '', tipo: '' }
-  let exito = true;
-
-  if (selectedFile.value) {
-    exito = await mainStore.subirAvatar(selectedFile.value)
-  }
-
-  if (exito) {
-    const exitoInfo = await mainStore.actualizarPerfil({
-      nombre_completo: form.nombre_completo
-    })
-    
-    if (exitoInfo) {
-      mensajeStatus.value = { texto: '¡Perfil actualizado con éxito! ✨', tipo: 'exito' }
-      selectedFile.value = null 
-    } else {
-      exito = false
-    }
-  }
-
-  if (!exito) {
-    mensajeStatus.value = { texto: mainStore.lastError || 'Error al actualizar', tipo: 'error' }
+  
+  const exitoInfo = await mainStore.actualizarPerfil({
+    nombre_completo: form.nombre_completo
+  })
+  
+  if (exitoInfo) {
+    mensajeStatus.value = { texto: '¡Datos básicos actualizados con éxito! ✨', tipo: 'exito' }
+  } else {
+    mensajeStatus.value = { texto: mainStore.lastError || 'Error al actualizar el perfil', tipo: 'error' }
   }
 }
 
@@ -134,10 +174,10 @@ const handleChangePassword = async () => {
         <h3>Información Personal</h3>
         
         <div class="avatar-edit-container">
-          <div class="avatar-wrapper" @click="triggerFileInput" title="Pulsa para cambiar la foto">
+          <div class="avatar-wrapper" @click="isMenuFotoOpen = !isMenuFotoOpen" title="Pulsa para opciones de foto">
             <img :src="previewImage || defaultAvatar" alt="Avatar" class="profile-avatar" />
             <div class="edit-overlay">
-              <span>📷 Cambiar</span>
+              <span>{{ subiendoFoto ? '⏳ Subiendo...' : '📷 Opciones' }}</span>
             </div>
           </div>
           
@@ -149,9 +189,22 @@ const handleChangePassword = async () => {
             @change="onFileSelected" 
           />
           
-          <button type="button" class="btn-outline-sm" @click="triggerFileInput">
-            {{ previewImage ? 'Cambiar foto' : 'Añadir foto' }}
-          </button>
+          <div class="avatar-actions-container">
+            <button type="button" class="btn-edit-avatar" @click.prevent="isMenuFotoOpen = !isMenuFotoOpen">
+              📷 Editar foto de perfil
+            </button>
+
+            <div v-if="isMenuFotoOpen" class="avatar-dropdown">
+              <button class="dropdown-item" @click.prevent="triggerFileInput">
+                📷 Subir foto de perfil
+              </button>
+              
+              <button class="dropdown-item delete-text" @click.prevent="solicitarBorradoFoto">
+                🗑️ Eliminar foto de perfil
+              </button>
+            </div>
+          </div>
+
         </div>
 
         <div class="form-group">
@@ -193,205 +246,13 @@ const handleChangePassword = async () => {
       </section>
       
     </div>
+    <ConfirmModal 
+  v-if="mostrarModalFoto" 
+  titulo="¿Eliminar foto de perfil?" 
+  mensaje="Tu foto desaparecerá y se mostrará la inicial de tu nombre por defecto."
+  :isLoading="mainStore.isLoading"
+  @confirmar="confirmarBorradoFoto" 
+  @cancelar="mostrarModalFoto = false" 
+/>
   </div>
 </template>
-
-<style scoped>
-.edit-profile-page { 
-  max-width: 900px; 
-  margin: 40px auto; 
-  padding: 0 20px; 
-  font-family: 'Nunito', sans-serif; 
-}
-
-.edit-header { 
-  margin-bottom: 30px; 
-}
-
-.btn-back { 
-  background: none; 
-  border: none; 
-  color: #666; 
-  font-weight: 700; 
-  cursor: pointer; 
-  margin-bottom: 10px; 
-  padding: 0;
-}
-
-.btn-back:hover {
-  color: #E10818;
-}
-
-.edit-grid { 
-  display: grid; 
-  grid-template-columns: 1fr 1fr; 
-  gap: 30px; 
-  align-items: start;
-}
-
-.edit-section { 
-  background: white; 
-  padding: 30px; 
-  border-radius: 24px; 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.03); 
-  border: 1px solid #f0f0f0; 
-}
-
-.edit-section h3 { 
-  margin-top: 0; 
-  margin-bottom: 25px; 
-  color: #2c3e50; 
-}
-
-.form-group { 
-  margin-bottom: 20px; 
-}
-
-.form-group label { 
-  display: block; 
-  font-weight: 800; 
-  font-size: 0.85rem; 
-  color: #7f8c8d; 
-  margin-bottom: 8px; 
-  text-transform: uppercase; 
-}
-
-.form-group input { 
-  width: 100%; 
-  padding: 12px; 
-  border: 2px solid #eee; 
-  border-radius: 12px; 
-  font-family: inherit; 
-  box-sizing: border-box; 
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus {
-  border-color: #2c3e50;
-  outline: none;
-}
-
-.disabled-input { 
-  background: #f9f9f9; 
-  color: #999; 
-  cursor: not-allowed;
-}
-
-.btn-save { 
-  width: 100%; 
-  padding: 14px; 
-  background: #2c3e50; 
-  color: white; 
-  border: none; 
-  border-radius: 12px; 
-  font-weight: 800; 
-  cursor: pointer; 
-  transition: all 0.3s; 
-  margin-top: 10px;
-}
-
-.btn-save:hover { 
-  background: #1a252f; 
-  transform: translateY(-2px); 
-}
-
-.btn-save:disabled { 
-  background: #ccc; 
-  cursor: not-allowed; 
-  transform: none;
-}
-
-.btn-security { 
-  background: #E10818; 
-}
-
-.btn-security:hover { 
-  background: #b90614; 
-}
-
-.status-msg { 
-  padding: 15px; 
-  border-radius: 12px; 
-  margin-bottom: 25px; 
-  font-weight: 700; 
-  text-align: center; 
-}
-
-.exito { background: #e8f5e9; color: #2e7d32; }
-.error { background: #ffebee; color: #c62828; }
-
-/* ESTILOS DE LA FOTO DE PERFIL */
-.avatar-edit-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.avatar-wrapper {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  cursor: pointer;
-  overflow: hidden;
-  border: 4px solid white;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
-
-.avatar-wrapper:hover {
-  transform: scale(1.05);
-}
-
-.profile-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.edit-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8rem;
-  font-weight: 700;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.avatar-wrapper:hover .edit-overlay {
-  opacity: 1;
-}
-
-.btn-outline-sm {
-  background: transparent;
-  border: 1px solid #ddd;
-  color: #555;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-}
-
-.btn-outline-sm:hover {
-  border-color: #ccc;
-  background-color: #f9f9f9;
-}
-
-@media (max-width: 768px) {
-  .edit-grid { grid-template-columns: 1fr; }
-}
-</style>

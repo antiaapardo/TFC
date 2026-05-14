@@ -1,9 +1,8 @@
-/* src/css/main.css */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
 :root {
-  --mec-red: #E10818;      /* Color Solidarios */
-  --mec-brown: #8B4513;    /* Color Vintage */
+  --mec-red: #E10818;     
+  --mec-brown: #8B4513;    
   --mec-bg: #f9f9f9;
   --mec-text: #222222;
   --mec-gray: #717171;

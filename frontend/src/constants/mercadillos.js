@@ -1,9 +1,9 @@
 export const CATEGORIAS_MEC = {
-  1: { nombre: 'Vaciado', color: '#E10818' },   // Rojo MEC
-  2: { nombre: 'Vintage', color: '#8B4513' },   // Marrón Vintage
-  3: { nombre: 'Solidario', color: '#E10818' }, // Solidarios
-  4: { nombre: 'Vecinal', color: '#0055ff' },   // Azul Vecinal
-  5: { nombre: 'Upcycling', color: '#e5218b' }  // Rosa Upcycling
+  1: { nombre: 'Vaciado', color: '#E10818' },  
+  2: { nombre: 'Vintage', color: '#8B4513' }, 
+  3: { nombre: 'Solidario', color: '#E10818' }, 
+  4: { nombre: 'Vecinal', color: '#0055ff' },   
+  5: { nombre: 'Upcycling', color: '#e5218b' }  
 }
 
 export const MESSAGE_STATUS = {

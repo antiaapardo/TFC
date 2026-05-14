@@ -1,5 +1,3 @@
-/* src/css/VerificarCuenta.css */
-
 .verificar-container {
   display: flex;
   justify-content: center;
@@ -58,7 +56,7 @@ h2 {
 }
 
 .btn-login {
-  background: #112A46; /* Azul oscuro de tu marca */
+  background: #112A46;
   color: white;
 }
 

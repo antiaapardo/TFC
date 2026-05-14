@@ -1,11 +1,11 @@
-# backend/app.py
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from dto import (get_todos_los_eventos, get_todas_las_categorias, add_favorito_dto, 
                  remove_favorito_dto, get_favoritos_dto, register_user_dto, 
                  login_user_dto, add_evento_dto, eliminar_evento_dto, 
-                 verificar_usuario_dto, response_wrapper, update_user_foto_dto, update_user_info_dto, change_password_dto)
+                 verificar_usuario_dto, response_wrapper, update_user_foto_dto, update_user_info_dto, change_password_dto, update_evento_imagen_dto)
 import os
+import shutil
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -95,6 +95,43 @@ def delete_evento(id_evento):
     res, code = eliminar_evento_dto(id_evento)
     return make_response(jsonify(res), code)
 
+@app.route('/api/eventos/<int:id_evento>/imagenes', methods=['POST'])
+def subir_imagenes_evento(id_evento):
+    try:
+        if 'imagenes' not in request.files:
+            return jsonify({"status": {"msg": "No hay archivos en la petición"}}), 400
+
+        archivos = request.files.getlist('imagenes')
+        urls_finales = []
+
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        carpeta_evento = os.path.join(base_path, 'static', 'img_eventos', str(id_evento))
+        
+        os.makedirs(carpeta_evento, exist_ok=True)
+
+        for indice, file in enumerate(archivos):
+            if file.filename != '':
+                extension = os.path.splitext(file.filename)[1].lower()
+                nombre_archivo = f"img_{indice}{extension}"
+                file_path = os.path.join(carpeta_evento, nombre_archivo)
+                
+                file.save(file_path)
+                
+                urls_finales.append(f"http://localhost:5000/static/img_eventos/{id_evento}/{nombre_archivo}")
+
+        urls_string = ",".join(urls_finales)
+        res, code = update_evento_imagen_dto(id_evento, urls_string)
+        
+        return make_response(jsonify(res), code)
+
+    except Exception as e:
+        print(f"❌ ERROR CRÍTICO EN FLASK: {e}")
+        return jsonify({"status": {"msg": f"Error interno: {str(e)}"}}), 500
+
+# ==========================================
+# RUTAS DE CATEGORIAS
+# ==========================================
+    
 @app.route("/api/categorias", methods=["GET"])
 def get_categorias():
     """
@@ -262,6 +299,25 @@ def subir_avatar(id_usuario):
         res, code = update_user_foto_dto(id_usuario, url_final)
         return make_response(jsonify(res), code)
     
+@app.route('/api/usuarios/<int:id_usuario>/avatar', methods=['DELETE'])
+def borrar_avatar(id_usuario):
+    """
+    Elimina la foto de perfil del usuario.
+    1. Pone la URL a NULL en la base de datos.
+    2. Borra el archivo físico del servidor.
+    """
+    res, code = update_user_foto_dto(id_usuario, None)
+    
+    if code == 200:
+        try:
+            carpeta_usuario = os.path.join(os.getcwd(), 'static', 'img_perfil', str(id_usuario))
+            if os.path.exists(carpeta_usuario):
+                shutil.rmtree(carpeta_usuario) 
+        except Exception as e:
+            print(f"Aviso: No se pudo borrar la carpeta física: {e}")
+
+    return make_response(jsonify(res), code)
+
 @app.route('/api/usuarios/<int:id_usuario>', methods=['PUT'])
 def update_perfil(id_usuario):
     """Actualiza datos básicos como el nombre."""
@@ -280,5 +336,6 @@ def change_password(id_usuario):
     
     res, code = change_password_dto(id_usuario, password_actual, password_nueva)
     return make_response(jsonify(res), code)
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

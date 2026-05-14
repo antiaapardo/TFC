@@ -6,7 +6,6 @@ import '../css/MapaInteractivo.css';
 
 import { CATEGORIAS_MEC } from '../constants/mercadillos';
 
-// Configuración de los iconos por defecto de Leaflet
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
@@ -26,7 +25,6 @@ const props = defineProps({
   }
 });
 
-// VARIABLES NORMALES (El escudo anti-errores de Leaflet)
 let map = null;
 let markerLayer = null; 
 

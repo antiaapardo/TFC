@@ -85,7 +85,6 @@ def eliminar_evento_dto(id_evento):
         tuple: (Respuesta formateada, código HTTP 200/500).
     """
     query = "DELETE FROM eventos WHERE id_evento = %s"
-    # CORREGIDO: Se debe usar sql.modify para DELETE, no sql.insert
     result = sql.modify(query=query, parameters=(id_evento,))
     
     if result.success:
@@ -269,7 +268,6 @@ def register_user_dto(nombre_completo, email, password, tipo_usuario, telefono):
     elif result.code == 409: 
         return response_wrapper("112", "Ese email ya está registrado"), 409
     else:
-        print("❌ ERROR EN LA BASE DE DATOS:", getattr(result, 'message', 'Error desconocido'))
         return response_wrapper("100", "Error al registrar usuario"), 500
 
 def login_user_dto(email, password):
@@ -295,13 +293,11 @@ def login_user_dto(email, password):
 
     user = result.data
     
-    # Candado: Verificamos si validó el email
     if not user.get('verified_email'):
         return response_wrapper("105", "Debes verificar tu correo para poder iniciar sesión."), 403
     
-    # Candado: Verificamos contraseña encriptada
     if check_password_hash(user['password'], password):
-        del user['password'] # Eliminamos el hash de la respuesta por seguridad
+        del user['password']
         return response_wrapper("000", "Login exitoso", user), 200
     else:
         return response_wrapper("104", "Usuario no encontrado o credenciales incorrectas"), 401
@@ -324,6 +320,7 @@ def verificar_usuario_dto(token):
         return response_wrapper("000", "Cuenta verificada con éxito", {}), 200
     else:
         return response_wrapper("113", "Enlace inválido o cuenta ya verificada", {}), 400
+
 # ==========================================
 # GESTIÓN DE PERFIL Y CONFIGURACIÓN
 # ==========================================
@@ -342,7 +339,6 @@ def update_user_foto_dto(id_usuario, url_foto):
     query = "UPDATE usuarios SET foto_url = %s WHERE id_usuario = %s"
     parameters = (url_foto, id_usuario)
     
-    # Usamos sql.modify para sentencias UPDATE
     result = sql.modify(query=query, parameters=parameters)
     
     if result.success:
@@ -383,18 +379,15 @@ def change_password_dto(id_usuario, antigua, nueva):
     Retorna:
         tuple: (Respuesta formateada, código HTTP).
     """
-    # 1. Buscamos el hash de la contraseña actual
     query_find = "SELECT password FROM usuarios WHERE id_usuario = %s"
     res_find = sql.find(query=query_find, multiple=False, parameters=(id_usuario,))
     
     if not res_find.success or not res_find.data:
         return response_wrapper("104", "Usuario no encontrado"), 404
 
-    # 2. Verificamos si la contraseña antigua coincide con el hash
     if not check_password_hash(res_find.data['password'], antigua):
         return response_wrapper("401", "La contraseña actual es incorrecta"), 401
     
-    # 3. Si es correcta, encriptamos la nueva y actualizamos
     nueva_encriptada = generate_password_hash(nueva)
     query_update = "UPDATE usuarios SET password = %s WHERE id_usuario = %s"
     
@@ -404,3 +397,12 @@ def change_password_dto(id_usuario, antigua, nueva):
         return response_wrapper("000", "Contraseña cambiada con éxito"), 200
     else:
         return response_wrapper("100", "Error al actualizar la contraseña en la base de datos"), 500
+
+def update_evento_imagen_dto(id_evento, url_imagen):
+    query = "UPDATE eventos SET foto_url = %s WHERE id_evento = %s"
+    result = sql.modify(query=query, parameters=(url_imagen, id_evento))
+    
+    if result.success:
+        return response_wrapper("000", "Imagen del evento actualizada", {"imagen_url": url_imagen}), 200
+    else:
+        return response_wrapper("100", "Error al actualizar la imagen del evento"), 500
