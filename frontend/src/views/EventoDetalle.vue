@@ -10,7 +10,7 @@ const route = useRoute()
 const router = useRouter()
 const mainStore = useMainStore()
 
-const idEvento = route.params.id
+const idEvento = Number(route.params.id)
 const cargandoData = ref(true)
 
 onMounted(async () => {

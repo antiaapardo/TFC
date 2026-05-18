@@ -18,12 +18,11 @@ const filtroTipo = ref('')
 const filtroFecha = ref('')
 
 onMounted(async () => {
-  // Manejamos los errores si fallan las peticiones iniciales
-  await mainStore.fetchCategorias()
-  await mainStore.fetchEventos()
+if (mainStore.categorias.length === 0) {
+    await mainStore.fetchCategorias()
+  }  await mainStore.fetchEventos()
 })
 
-// Esta lógica computada es perfecta y reactiva
 const eventosFiltrados = computed(() => {
   if (!mainStore.eventos) return []
 

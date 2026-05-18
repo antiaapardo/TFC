@@ -33,7 +33,7 @@ const mensajeStatus = ref({ texto: '', tipo: '' })
 // LÓGICA DE FOTO DE PERFIL
 // ==========================================
 const triggerFileInput = () => {
-  isMenuFotoOpen.value = false // Cerramos el menú
+  isMenuFotoOpen.value = false
   fileInput.value.click()
 }
 
@@ -50,12 +50,10 @@ const onFileSelected = async (event) => {
     return
   }
 
-  // 1. Mostramos la foto al instante para que el usuario la vea rápido
   const reader = new FileReader()
   reader.onload = (e) => { previewImage.value = e.target.result }
   reader.readAsDataURL(file)
 
-  // 2. ¡LA SUBIMOS DIRECTAMENTE!
   subiendoFoto.value = true
   isMenuFotoOpen.value = false // Cerramos el menú
   mensajeStatus.value = { texto: 'Subiendo foto de perfil... ⏳', tipo: 'info' }
@@ -63,18 +61,15 @@ const onFileSelected = async (event) => {
   const exito = await mainStore.subirAvatar(file)
 
   if (exito) {
-    mensajeStatus.value = { texto: '¡Foto de perfil actualizada al instante! 📸', tipo: 'exito' }
-    // Aseguramos que la previsualización usa la URL real del servidor
+    mensajeStatus.value = { texto: '¡Foto de perfil actualizada! 📸', tipo: 'exito' }
     previewImage.value = mainStore.currentUser.foto_url 
   } else {
     mensajeStatus.value = { texto: mainStore.lastError || 'Error al subir la foto', tipo: 'error' }
-    // Si falla, volvemos a la foto que tenía antes
     previewImage.value = mainStore.currentUser.foto_url || defaultAvatar
   }
 
   subiendoFoto.value = false
   
-  // Limpiamos el input por si el usuario quiere volver a subir la misma foto luego
   if (fileInput.value) fileInput.value.value = ''
 }
 
@@ -86,9 +81,7 @@ const solicitarBorradoFoto = () => {
 const confirmarBorradoFoto = async () => {
   console.log("👉 1. Botón del modal pulsado");
   
-  // Comprobamos si la función existe en tu mainStore
   if (typeof mainStore.eliminarAvatar !== 'function') {
-    console.error("❌ ERROR: La función eliminarAvatar NO existe en mainStore. ¡Revisa tu main.js!");
     return;
   }
 

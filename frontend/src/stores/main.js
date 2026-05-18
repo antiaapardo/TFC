@@ -141,12 +141,11 @@ export const useMainStore = defineStore('main', {
       }
     },
 
-    // Unificado a async/await
     async fetchCategorias(callback = null) {
       this.lastError = null;
       try {
         const r = await axios.get(`${this.apiEndpoint}/categorias`);
-        if (r.data && r.data.success) {
+        if (r.data && r.data.data) {
           this.categorias = r.data.data;
           if (callback) callback({ type: 'success', msg: 'Categorías cargadas' });
         }

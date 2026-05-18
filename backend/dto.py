@@ -230,7 +230,6 @@ def enviar_correo_verificacion(email_destino, token):
         server.quit()
         return True
     except Exception as e:
-        print(f"❌ Error CRÍTICO al enviar correo: {e}")
         return False
 
 def register_user_dto(nombre_completo, email, password, tipo_usuario, telefono):

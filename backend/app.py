@@ -125,7 +125,6 @@ def subir_imagenes_evento(id_evento):
         return make_response(jsonify(res), code)
 
     except Exception as e:
-        print(f"❌ ERROR CRÍTICO EN FLASK: {e}")
         return jsonify({"status": {"msg": f"Error interno: {str(e)}"}}), 500
 
 # ==========================================

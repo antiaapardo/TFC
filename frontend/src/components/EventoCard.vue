@@ -71,7 +71,6 @@ const imagenPortada = computed(() => {
 
     <div class="content">
       <h3 class="title">{{ evento.titulo }}</h3>
-      <p class="description">{{ evento.descripcion }}</p>
       
       <div class="footer">
         <span>📍 {{ evento.direccion_texto }}</span>

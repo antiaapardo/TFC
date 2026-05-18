@@ -2,15 +2,17 @@
 import { computed } from 'vue'
 import { useMainStore } from '../stores/main'
 import EventoCard from '../components/EventoCard.vue'
+import { useRouter } from 'vue-router'
 
-// Importamos el nuevo CSS específico para esta vista
 import '../css/Favoritos.css'
-// Si necesitas estilos compartidos de Home.css, lo puedes mantener
 import '../css/Home.css' 
 
 const mainStore = useMainStore()
+const router = useRouter()
 
-// Lógica impecable: cruzamos los IDs de favoritos con los eventos totales
+const irADetalle = (idEvento) => {
+  router.push(`/evento/${idEvento}`)
+}
 const misFavoritos = computed(() => {
   if (!mainStore.eventos || !mainStore.favoritos) return []
   
@@ -40,11 +42,11 @@ const misFavoritos = computed(() => {
 
     <section v-else class="events-grid favoritos-grid">
       <EventoCard 
-        v-for="item in misFavoritos" 
-        :key="item.id_evento" 
-        :evento="item" 
+        v-for="evento in misFavoritos" 
+        :key="evento.id_evento" 
+        :evento="evento" 
+        @click="irADetalle(evento.id_evento)" 
       />
     </section>
-
   </div>
 </template>

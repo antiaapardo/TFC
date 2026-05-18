@@ -7,7 +7,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  height: 100%;
+  height: auto; /* ¡LA CLAVE! Dejamos que la tarjeta crezca hacia abajo todo lo que necesite */
 }
 
 .evento-card:hover {
@@ -18,8 +18,9 @@
 .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 65%;
+  height: 160px; /* Altura fija para la foto. Así nunca se comerá el espacio del texto */
   background-color: #f0f0f0;
+  flex-shrink: 0;
 }
 
 .evento-img {
@@ -50,33 +51,23 @@
 }
 
 .evento-card .title {
-  margin: 0 0 8px 0;
+  margin: 0 0 12px 0;
   font-size: 1.1rem !important;
   font-weight: 700;
   color: #222;
-  line-height: 1.2;
-}
-
-.evento-card .description {
-  margin: 0 0 12px 0;
-  font-size: 0.9rem !important;
-  color: #717171;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-grow: 1;
+  line-height: 1.3;
 }
 
 .footer {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #222;
+  color: #555;
   border-top: 1px solid #eee;
-  padding-top: 10px;
+  padding-top: 12px;
+  margin-top: auto; 
 }
 
 .fav-btn {

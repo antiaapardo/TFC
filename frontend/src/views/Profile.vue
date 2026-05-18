@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useMainStore } from '../stores/main'
 import ConfirmModal from '../components/ModalConfirm.vue'
-
+import { useRouter } from 'vue-router'
 import EventoCard from '../components/EventoCard.vue'
 import BotonPublicar from '../components/BotonPublicar.vue'
 import ModalPublicar from '../components/ModalPublicar.vue'
@@ -11,13 +11,16 @@ import '../css/Profile.css'
 
 const mainStore = useMainStore()
 const mostrarModal = ref(false)
+const router = useRouter()
 
 onMounted(() => {
   if (!mainStore.eventos || mainStore.eventos.length === 0) {
     mainStore.fetchEventos()
   }
 })
-
+const irADetalle = (idEvento) => {
+  router.push(`/evento/${idEvento}`)
+}
 const esOrganizador = computed(() => {
   return mainStore.currentUser?.tipo_usuario === 'organizador'
 })
@@ -71,15 +74,15 @@ const confirmarBorrado = async () => {
     <header class="profile-banner">
       <div class="banner-user-info">
         <div class="banner-avatar" style="overflow: hidden; padding: 0;">
-  <img 
-    v-if="mainStore.currentUser?.foto_url" 
-    :src="mainStore.currentUser.foto_url" 
-    style="width: 100%; height: 100%; object-fit: cover;" 
-  />
-  <span v-else>
-    {{ mainStore.currentUser?.nombre_completo?.charAt(0).toUpperCase() || 'U' }}
-  </span>
-</div>
+          <img 
+            v-if="mainStore.currentUser?.foto_url" 
+            :src="mainStore.currentUser.foto_url" 
+            style="width: 100%; height: 100%; object-fit: cover;" 
+          />
+          <span v-else>
+            {{ mainStore.currentUser?.nombre_completo?.charAt(0).toUpperCase() || 'U' }}
+          </span>
+        </div>
         <div class="banner-text">
           <h2>{{ mainStore.currentUser?.nombre_completo || 'Usuario' }}</h2>
           <p class="banner-email">{{ mainStore.currentUser?.email }}</p>
@@ -87,10 +90,10 @@ const confirmarBorrado = async () => {
         </div>
       </div>
       <div class="banner-actions">
-  <router-link to="/profile/edit">
-    <button class="btn-outline">Editar Perfil</button>
-  </router-link>
-</div>
+        <router-link to="/profile/edit">
+          <button class="btn-outline">Editar Perfil</button>
+        </router-link>
+      </div>
     </header>
 
     <main class="profile-full-content">
@@ -103,7 +106,12 @@ const confirmarBorrado = async () => {
 
         <div class="events-grid">
           <div v-for="evento in misEventos" :key="evento.id_evento" class="evento-wrapper">
-            <EventoCard :evento="evento" />
+            
+            <EventoCard 
+              :evento="evento" 
+              @click="irADetalle(evento.id_evento)" 
+            />
+            
             <button @click="solicitarBorrado(evento.id_evento)" class="btn-eliminar">
               🗑️ Eliminar Mercadillo
             </button>
@@ -143,15 +151,14 @@ const confirmarBorrado = async () => {
       />
 
       <div v-if="mostrarConfirmacion && esOrganizador" class="confirm-overlay">
-      <ConfirmModal 
-        v-if="mostrarConfirmacion && esOrganizador" 
-        titulo="¿Eliminar mercadillo?" 
-        mensaje="Esta acción no se puede deshacer. Desaparecerá de tu perfil y del mapa principal."
-        :error="errorBorrado"
-        :isLoading="mainStore.isLoading"
-        @confirmar="confirmarBorrado" 
-        @cancelar="cancelarBorrado" 
-      />
+        <ConfirmModal 
+          titulo="¿Eliminar mercadillo?" 
+          mensaje="Esta acción no se puede deshacer. Desaparecerá de tu perfil y del mapa principal."
+          :error="errorBorrado"
+          :isLoading="mainStore.isLoading"
+          @confirmar="confirmarBorrado" 
+          @cancelar="cancelarBorrado" 
+        />
       </div>
 
     </main>
