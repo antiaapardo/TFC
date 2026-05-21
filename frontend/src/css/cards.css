@@ -20,3 +20,19 @@
   height: 100%;
   object-fit: cover;
 }
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  .event-card:hover {
+    transform: none; /* Quitamos el saltito en móviles para que al tocar con el dedo abra a la primera */
+  }
+
+  .card-image {
+    aspect-ratio: 4/3; /* Hacemos la foto un poco más cuadrada para que llene mejor la pantalla vertical del móvil */
+  }
+  
+  /* Si la tarjeta tiene algún padding interno para los textos (ej: .card-content), 
+     suele ser buena idea reducirlo un poco aquí, por ejemplo: padding: 12px; */
+}

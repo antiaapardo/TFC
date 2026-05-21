@@ -182,3 +182,43 @@
     grid-template-columns: 1fr; 
   }  
 }
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  .detalle-page {
+    margin-top: 15px;
+    padding: 0 15px;
+  }
+
+  /* Pasamos a 1 sola columna y quitamos el alto mínimo */
+  .hero-card {
+    grid-template-columns: 1fr; 
+    min-height: auto;
+    border-radius: 20px;
+  }
+
+  /* Le damos a la foto una altura fija para que no ocupe toda la pantalla */
+  .image-section {
+    height: 250px; 
+  }
+
+  /* ¡LA CLAVE! Reducimos el padding gigante para que el texto respire en el móvil */
+  .info-section {
+    padding: 25px 20px;
+  }
+
+  /* Achicamos un poco la etiqueta de la categoría */
+  .badge {
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  /* Quitamos el saltito del botón de volver para pantallas táctiles */
+  .btn-back:hover {
+    transform: none;
+  }
+}

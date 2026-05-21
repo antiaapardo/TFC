@@ -153,7 +153,7 @@ const handleChangePassword = async () => {
 <template>
   <div class="edit-profile-page">
     <div class="edit-header">
-      <button @click="router.back()" class="btn-back">← Cancelar y volver</button>
+      <button @click="router.back()" class="btn-back">← Volver al inicio </button>
       <h1>Editar mi perfil</h1>
     </div>
 

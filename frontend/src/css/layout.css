@@ -16,3 +16,20 @@
   height: calc(100vh - 80px);
   overflow: hidden;
 }
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  /* 1. Ajustamos la cabecera para no perder espacio a los lados */
+  .main-header {
+    padding: 1rem; 
+  }
+
+  /* 2. ¡LA CLAVE! Rompemos la cuadrícula rígida para apilar el contenido */
+  .content-split {
+    grid-template-columns: 1fr; /* Pasa a tener 1 sola columna que ocupa todo el ancho */
+    height: auto; /* Quitamos la altura fija para que la pantalla pueda crecer */
+    overflow: visible; /* Permitimos hacer scroll natural con el dedo en toda la página */
+  }
+}

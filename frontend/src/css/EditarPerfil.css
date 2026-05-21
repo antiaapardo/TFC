@@ -242,6 +242,38 @@
   background: #fdf0f0;
 }
 
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
 @media (max-width: 768px) {
-  .edit-grid { grid-template-columns: 1fr; }
+  /* Pasamos a 1 sola columna para los formularios */
+  .edit-grid { 
+    grid-template-columns: 1fr; 
+    gap: 20px; /* Reducimos el espacio entre las dos cajas */
+  }
+
+  /* Reducimos los márgenes generales de la página */
+  .edit-profile-page {
+    margin: 20px auto; 
+    padding: 0 15px; 
+  }
+
+  /* Reducimos el "gordor" de las cajas blancas */
+  .edit-section {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  /* Hacemos la foto de perfil un pelín más pequeña */
+  .avatar-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* En móviles no hay ratón, así que el efecto "hover" no se ve.
+     Mantenemos el texto "Editar" siempre un poco visible. */
+  .edit-overlay {
+    opacity: 0.8; 
+    height: 35%;
+  }
 }

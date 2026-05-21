@@ -16,13 +16,40 @@ const router = useRouter()
 
 const filtroTipo = ref('')
 const filtroFecha = ref('')
+const usandoCercania = ref(false)
+const userLat = ref(null)
+const userLon = ref(null)
+const radioMaximoKm = ref(10)
 
 onMounted(async () => {
 if (mainStore.categorias.length === 0) {
     await mainStore.fetchCategorias()
   }  await mainStore.fetchEventos()
 })
+const conmutarFiltroCercania = () => {
+  if (usandoCercania.value) {
+    // Si ya estaba activo, lo apagamos
+    usandoCercania.value = false
+    return
+  }
 
+  if (!navigator.geolocation) {
+    alert('Tu navegador no soporta geolocalización.')
+    return
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      userLat.value = position.coords.latitude
+      userLon.value = position.coords.longitude
+      usandoCercania.value = true
+    },
+    (error) => {
+      console.error('Error al obtener ubicación:', error)
+      alert('No se pudo acceder a tu ubicación. Asegúrate de dar permisos en el navegador.')
+    }
+  );
+}
 const eventosFiltrados = computed(() => {
   if (!mainStore.eventos) return []
 
@@ -38,12 +65,34 @@ const eventosFiltrados = computed(() => {
     const cumpleTipo = !filtroTipo.value || e.id_categoria == filtroTipo.value
     const cumpleFecha = !filtroFecha.value || (e.fecha_inicio && e.fecha_inicio.includes(filtroFecha.value))
     
-    return cumpleTipo && cumpleFecha
+    // Filtro de cercanía física (asumiendo que tus eventos traen latitud y longitud del backend)
+    let cumpleCercania = true
+    if (usandoCercania.value && userLat.value && userLon.value) {
+      const distancia = calcularDistanciaEnKm(userLat.value, userLon.value, e.latitud, e.longitud)
+      cumpleCercania = distancia <= radioMaximoKm.value
+    }
+    
+    return cumpleTipo && cumpleFecha && cumpleCercania
   })
 })
 
 const irADetalle = (id) => {
   router.push(`/evento/${id}`)
+}
+
+const calcularDistanciaEnKm = (lat1, lon1, lat2, lon2) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+  
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  
+  const a = 
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 </script>
 
@@ -53,12 +102,14 @@ const irADetalle = (id) => {
       <SearchBar 
         v-model:filtroTipo="filtroTipo" 
         v-model:filtroFecha="filtroFecha" 
-        :categorias="mainStore.categorias" 
+        :categorias="mainStore.categorias"
+        :usandoUbicacion="usandoCercania"
+        @activarCercania="conmutarFiltroCercania"
       />
     </header>
 
-    <main class="main-layout">
-      <div v-if="mainStore.isLoading" class="loading-state">
+    <main class="main-layout" :class="{ 'modo-mapa-movil': $route.query.vista === 'mapa' }">
+        <div v-if="mainStore.isLoading" class="loading-state">
         {{ UI_MESSAGES.LOADING }}
       </div>
 

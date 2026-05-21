@@ -29,7 +29,7 @@ const handleLogout = () => {
       <router-link to="/" class="logo-area" style="text-decoration: none; cursor: pointer;">
         <img :src="logoImage" alt="Logo MEC" class="main-logo" />
         <div class="title-info">
-          <h1 style="color: #222;">MEC: Mercadillos en Casa 🏠</h1>
+          <h1 style="color: #222;">MEC: Mercadillos en Casa</h1>
           <p class="subtitle">Economía circular en tu barrio</p>
         </div>
       </router-link>
@@ -99,5 +99,42 @@ const handleLogout = () => {
     </header>
 
     <router-view />
+
+    <nav class="bottom-nav">
+      <router-link to="/" class="bottom-nav-item" :class="{ 'icono-activo': $route.path === '/' && !$route.query.vista }">
+        <span class="nav-icon">🔍</span>
+        <span>Explorar</span>
+      </router-link>
+      
+      <router-link to="/?vista=mapa" class="bottom-nav-item" :class="{ 'icono-activo': $route.query.vista === 'mapa' }">
+        <span class="nav-icon">🗺️</span>
+        <span>Mapa</span>
+      </router-link>
+      
+      <router-link to="/favoritos" class="bottom-nav-item" :class="{ 'icono-activo': $route.path === '/favoritos' }">
+        <span class="nav-icon">❤️</span>
+        <span>Favoritos</span>
+      </router-link>
+      
+      <router-link :to="mainStore.currentUser ? '/profile' : '/login'" class="bottom-nav-item" :class="{ 'icono-activo': $route.path === '/profile' || $route.path === '/login' }">
+        
+        <div v-if="mainStore.currentUser" class="profile-circle-nav">
+          <img 
+            v-if="mainStore.currentUser?.foto_url" 
+            :src="mainStore.currentUser.foto_url" 
+            alt="Avatar"
+          />
+          <span v-else>
+            {{ mainStore.currentUser?.nombre_completo?.charAt(0).toUpperCase() || 'U' }}
+          </span>
+        </div>
+
+        <span v-else class="nav-icon">👤</span>
+        
+        <span v-if="mainStore.currentUser">Perfil</span>
+        <span v-else>Entrar</span>
+      </router-link>
+    </nav>
+
   </div>
 </template>

@@ -47,3 +47,31 @@
   padding: 0;
   width: 100%;
 }
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  /* Reducimos el espacio superior e inferior de toda la página */
+  .favoritos-container {
+    padding: 20px 15px;
+  }
+
+  /* Acercamos el título a las tarjetas */
+  .favoritos-header {
+    margin-bottom: 20px;
+  }
+
+  /* Hacemos el título un poco más adaptado a la pantalla */
+  .favoritos-title {
+    font-size: 1.4rem;
+  }
+
+  /* Quitamos un poco de "aire" a la caja de cuando no hay favoritos */
+  .favoritos-empty-state {
+    padding: 30px 15px;
+  }
+  .volver-link {
+    display: none
+  }
+} 

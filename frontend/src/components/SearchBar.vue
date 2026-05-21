@@ -44,7 +44,15 @@ defineEmits(['update:filtroTipo', 'update:filtroFecha', 'buscar'])
           @input="$emit('update:filtroFecha', $event.target.value)" 
         />
       </div>
-
+      <button 
+        type="button"
+        class="location-btn" 
+        :class="{ 'active': usandoUbicacion }"
+        @click="$emit('activarCercania')"
+        title="Filtrar por cercanía"
+      >
+        📍
+      </button>
       <button class="search-btn" @click="$emit('buscar')">
         🔍
       </button>

@@ -283,3 +283,72 @@
 .btn-cancel:hover { background: #e0e0e0; }
 .btn-danger { background: #E10818; color: white; }
 .btn-danger:hover { background: #c00715; }
+
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  /* 1. Reducimos el ancho general y márgenes */
+  .profile-page-container {
+    margin: 20px auto;
+    padding: 0 15px;
+    gap: 20px;
+  }
+
+  /* 2. El Banner: Apilamos la info del usuario y el botón de editar */
+  .profile-banner {
+    flex-direction: column; /* Apilamos verticalmente */
+    text-align: center; /* Centramos el texto para que quede más elegante */
+    padding: 25px 20px;
+    gap: 20px; /* Separamos los bloques de arriba y abajo */
+  }
+
+  .banner-user-info {
+    flex-direction: column; /* Apilamos la foto encima del nombre */
+    gap: 15px;
+  }
+
+  /* Reducimos un poco la foto de perfil */
+  .banner-avatar {
+    width: 75px;
+    height: 75px;
+    font-size: 2rem;
+  }
+
+  /* El botón de editar ocupa todo el ancho */
+  .btn-outline {
+    width: 100%;
+    padding: 12px;
+  }
+
+  /* 3. Panel principal de contenido */
+  .profile-full-content {
+    padding: 20px 15px;
+  }
+
+  .content-header {
+    flex-direction: column;
+    align-items: flex-start; /* Alineamos el título y el botón a la izquierda */
+    gap: 15px;
+  }
+
+  .content-header .btn-custom-style {
+    width: 100%; /* Botón de 'Crear Mercadillo' de lado a lado */
+  }
+
+  /* 4. Panel de bienvenida (Si el organizador aún no tiene eventos) */
+  .welcome-panel {
+    flex-direction: column; /* Ponemos el icono grande encima del texto */
+    align-items: center;
+    text-align: center;
+    padding: 25px 20px;
+    gap: 15px;
+  }
+
+  .welcome-icon {
+    min-width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
+  }
+}

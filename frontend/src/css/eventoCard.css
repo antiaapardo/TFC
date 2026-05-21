@@ -104,3 +104,31 @@
   50% { transform: scale(1.3); }
   100% { transform: scale(1.1); }
 }
+
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  /* 1. Desactivamos los efectos hover para pantallas táctiles */
+  .evento-card:hover {
+    transform: none; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06); /* Mantenemos la sombra original fija */
+  }
+
+  /* 2. Hacemos la foto un poquito más alta para que se vea mejor en formato panorámico */
+  .image-wrapper {
+    height: 190px; 
+  }
+
+  /* 3. Aumentamos el tamaño del botón del corazón para no fallar con el pulgar (Accesibilidad) */
+  .fav-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+
+  .fav-btn:hover {
+    transform: none; /* Tampoco queremos que el botón crezca si lo rozamos al hacer scroll */
+  }
+}

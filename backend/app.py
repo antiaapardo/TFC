@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from dto import (get_todos_los_eventos, get_todas_las_categorias, add_favorito_dto, 
-                 remove_favorito_dto, get_favoritos_dto, register_user_dto, 
-                 login_user_dto, add_evento_dto, eliminar_evento_dto, 
-                 verificar_usuario_dto, response_wrapper, update_user_foto_dto, update_user_info_dto, change_password_dto, update_evento_imagen_dto)
+from dto import (get_events, get_categories, add_favorite, 
+                 remove_favorite, get_favorite, register_user, 
+                 login_user, add_event, delete_event, 
+                 verify_user, response_wrapper, update_user_foto, update_user_info, change_password, update_event_image)
 import os
 import shutil
 from werkzeug.utils import secure_filename
@@ -34,7 +34,7 @@ def get_eventos():
     Notas:
         No requiere autenticación previa.
     """
-    res, code = get_todos_los_eventos()
+    res, code = get_events()
     return make_response(jsonify(res), code)
 
 @app.route("/api/eventos", methods=["POST"])
@@ -78,7 +78,7 @@ def create_evento():
         latitud = 40.4168
         longitud = -3.7038
 
-    res, code = add_evento_dto(id_organizador, id_categoria, titulo, descripcion, direccion_texto, latitud, longitud, fecha_inicio, fecha_fin, foto_url)
+    res, code = add_event(id_organizador, id_categoria, titulo, descripcion, direccion_texto, latitud, longitud, fecha_inicio, fecha_fin, foto_url)
     return make_response(jsonify(res), code)
 
 @app.route("/api/eventos/<int:id_evento>", methods=["DELETE"])
@@ -92,7 +92,7 @@ def delete_evento(id_evento):
     Retorna:
         Response: Una respuesta de Flask en formato JSON indicando el éxito o fracaso de la eliminación.
     """
-    res, code = eliminar_evento_dto(id_evento)
+    res, code = delete_event(id_evento)
     return make_response(jsonify(res), code)
 
 @app.route('/api/eventos/<int:id_evento>/imagenes', methods=['POST'])
@@ -120,7 +120,7 @@ def subir_imagenes_evento(id_evento):
                 urls_finales.append(f"http://localhost:5000/static/img_eventos/{id_evento}/{nombre_archivo}")
 
         urls_string = ",".join(urls_finales)
-        res, code = update_evento_imagen_dto(id_evento, urls_string)
+        res, code = update_event_image(id_evento, urls_string)
         
         return make_response(jsonify(res), code)
 
@@ -142,7 +142,7 @@ def get_categorias():
     Retorna:
         Response: Una respuesta de Flask en formato JSON conteniendo la lista de categorías.
     """
-    res, code = get_todas_las_categorias()
+    res, code = get_categories()
     return make_response(jsonify(res), code)
 
 # ==========================================
@@ -164,7 +164,7 @@ def add_favorito():
     if not body:
          return make_response(jsonify(response_wrapper("111", "Datos vacíos o JSON inválido")), 400)
          
-    res, code = add_favorito_dto(body.get('id_usuario'), body.get('id_evento'))
+    res, code = add_favorite(body.get('id_usuario'), body.get('id_evento'))
     return make_response(jsonify(res), code)
 
 @app.route("/api/favoritos", methods=["DELETE"])
@@ -182,7 +182,7 @@ def remove_favorito():
     if not body:
          return make_response(jsonify(response_wrapper("111", "Datos vacíos o JSON inválido")), 400)
          
-    res, code = remove_favorito_dto(body.get('id_usuario'), body.get('id_evento'))
+    res, code = remove_favorite(body.get('id_usuario'), body.get('id_evento'))
     return make_response(jsonify(res), code)
 
 @app.route("/api/favoritos/<int:id_usuario>", methods=["GET"])
@@ -196,7 +196,7 @@ def get_favoritos(id_usuario):
     Retorna:
         Response: Una respuesta de Flask en formato JSON con la lista de IDs de los eventos favoritos.
     """
-    res, code = get_favoritos_dto(id_usuario)
+    res, code = get_favorite(id_usuario)
     return make_response(jsonify(res), code)
 
 # ==========================================
@@ -227,7 +227,7 @@ def register():
     tipo_usuario = body.get('tipo_usuario', 'visitante') 
     telefono = body.get('telefono', '')
     
-    res, code = register_user_dto(nombre_completo, email, password, tipo_usuario, telefono)
+    res, code = register_user(nombre_completo, email, password, tipo_usuario, telefono)
     return make_response(jsonify(res), code)
 
 @app.route("/api/verificar/<token>", methods=["GET"])
@@ -265,7 +265,7 @@ def login():
     email = body.get('email')
     password = body.get('password')
     
-    res, code = login_user_dto(email, password)
+    res, code = login_user(email, password)
     return make_response(jsonify(res), code)
 
 # ==========================================
@@ -295,7 +295,7 @@ def subir_avatar(id_usuario):
 
         url_final = f"http://localhost:5000/static/img_perfil/{id_usuario}/{nombre_archivo}"
 
-        res, code = update_user_foto_dto(id_usuario, url_final)
+        res, code = update_user_foto(id_usuario, url_final)
         return make_response(jsonify(res), code)
     
 @app.route('/api/usuarios/<int:id_usuario>/avatar', methods=['DELETE'])
@@ -305,7 +305,7 @@ def borrar_avatar(id_usuario):
     1. Pone la URL a NULL en la base de datos.
     2. Borra el archivo físico del servidor.
     """
-    res, code = update_user_foto_dto(id_usuario, None)
+    res, code = update_user_foto(id_usuario, None)
     
     if code == 200:
         try:
@@ -323,7 +323,7 @@ def update_perfil(id_usuario):
     body = request.get_json(silent=True)
     nombre_completo = body.get('nombre_completo')
     
-    res, code = update_user_info_dto(id_usuario, nombre_completo)
+    res, code = update_user_info(id_usuario, nombre_completo)
     return make_response(jsonify(res), code)
 
 @app.route('/api/usuarios/<int:id_usuario>/password', methods=['PUT'])
@@ -333,7 +333,7 @@ def change_password(id_usuario):
     password_actual = body.get('actual')
     password_nueva = body.get('nueva')
     
-    res, code = change_password_dto(id_usuario, password_actual, password_nueva)
+    res, code = change_password(id_usuario, password_actual, password_nueva)
     return make_response(jsonify(res), code)
 
 if __name__ == '__main__':

@@ -14,3 +14,17 @@ body {
   background-color: var(--mec-bg);
   color: var(--mec-text);
 }
+
+/* ==========================================
+   AJUSTES GLOBALES PARA MÓVILES Y TÁCTILES
+   ========================================== */
+
+/* 1. La regla de oro del diseño responsivo */
+* {
+  box-sizing: border-box; 
+}
+
+/* 2. Comportamiento nativo en pantallas táctiles */
+body {
+  -webkit-tap-highlight-color: transparent; 
+}

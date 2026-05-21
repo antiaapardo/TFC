@@ -151,3 +151,81 @@
 .logout-item:hover {
   background-color: #fdedec;
 }
+/* Ocultamos la barra inferior en ordenadores */
+.bottom-nav {
+  display: none;
+}
+
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 15px; 
+  }
+
+  .main-logo { height: 40px; }
+  .title-info h1 { font-size: 1.1rem; }
+  .subtitle { display: none; }
+
+  /* 1. OCULTAMOS EL CORAZÓN Y EL PERFIL DE ARRIBA */
+  .nav-user {
+    display: none; 
+  }
+  
+  /* 2. ESTILOS DE LA BARRA INFERIOR (Estilo Airbnb) */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-top: 1px solid #ebebeb;
+    justify-content: space-around;
+    padding: 12px 0 25px 0; /* Padding extra abajo para la raya del iPhone */
+    z-index: 9999;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #717171; /* Gris apagado por defecto */
+    font-size: 0.65rem;
+    font-weight: 600;
+    gap: 4px;
+  }
+
+  .nav-icon {
+    font-size: 1.5rem;
+  }
+
+  /* Cuando estás en esa página, se pone rojo MEC */
+  .bottom-nav-item.router-link-active {
+    color: var(--mec-red);
+  }
+}
+/* Estilos para el mini círculo de perfil en la barra inferior */
+  .profile-circle-nav {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--mec-red);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    overflow: hidden;
+    margin-bottom: 2px; /* Un pequeño ajuste para que alinee con los emojis */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+
+  .profile-circle-nav img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }

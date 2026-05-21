@@ -1,5 +1,5 @@
 .create-btn {
-  background-color: var(--mec-red); /* Usamos la variable global de main.css */
+  background-color: var(--mec-red);
   color: white;
   border: none;
   padding: 10px 24px;
@@ -16,11 +16,25 @@
 }
 
 .create-btn:hover {
-  background-color: #b90614; /* Un tono más oscuro del rojo MEC */
+  background-color: #b90614;
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(225, 8, 24, 0.3);
 }
 
 .create-btn:active {
   transform: translateY(0);
+}
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  .create-btn {
+    padding: 10px 16px; /* Le quitamos un poco de "gordura" a los lados */
+    font-size: 0.9rem; /* Texto un pelín más pequeño */
+    
+    /* TRUCO MÓVIL: Si prefieres que el botón sea un bloque gigante de lado a lado, 
+       quita las barras y asteriscos de las dos líneas de abajo: */
+    /* width: 100%; */
+    /* justify-content: center; */
+  }
 }

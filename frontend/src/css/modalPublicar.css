@@ -139,3 +139,44 @@
   background: #eafaf1;
   color: #27ae60;
 }
+
+/* ==========================================
+   DISEÑO PARA MÓVILES (Pantallas < 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  
+  .modal-content {
+    width: 92%; /* Dejamos un pequeño margen lateral para que no pegue a los bordes del teléfono */
+    padding: 20px 15px; /* Reducimos el relleno interior para ganar espacio útil */
+    border-radius: 16px;
+    
+    /* ¡VITAL PARA MÓVILES! 
+       Evita que el modal sea más alto que la pantalla y permite hacer scroll 
+       por dentro si el teclado virtual tapa el botón de enviar. */
+    max-height: 90vh; 
+    overflow-y: auto; 
+  }
+
+  .modal-header {
+    margin-bottom: 15px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.3rem; /* Ajustamos el tamaño del título */
+  }
+
+  .modal-form input, 
+  .modal-form select {
+    padding: 10px 12px; /* Reducimos mínimamente la altura de los inputs */
+  }
+
+  /* Desactivamos los efectos hover para pantallas táctiles */
+  .close-btn:hover {
+    background: #f0f0f0;
+    color: #666;
+  }
+
+  .btn-submit:hover:not(:disabled) {
+    background-color: #E10818;
+  }
+}
