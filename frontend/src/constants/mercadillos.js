@@ -1,5 +1,5 @@
 export const CATEGORIAS_MEC = {
-  1: { nombre: 'Vaciado', color: '#E10818' },  
+  1: { nombre: 'Vaciado', color: '#e1da08' },  
   2: { nombre: 'Vintage', color: '#8B4513' }, 
   3: { nombre: 'Solidario', color: '#E10818' }, 
   4: { nombre: 'Vecinal', color: '#0055ff' },   

@@ -29,9 +29,7 @@ const form = reactive({
 
 const mensajeStatus = ref({ texto: '', tipo: '' })
 
-// ==========================================
-// LÓGICA DE FOTO DE PERFIL
-// ==========================================
+
 const triggerFileInput = () => {
   isMenuFotoOpen.value = false
   fileInput.value.click()
@@ -55,7 +53,7 @@ const onFileSelected = async (event) => {
   reader.readAsDataURL(file)
 
   subiendoFoto.value = true
-  isMenuFotoOpen.value = false // Cerramos el menú
+  isMenuFotoOpen.value = false  
   mensajeStatus.value = { texto: 'Subiendo foto de perfil... ⏳', tipo: 'info' }
 
   const exito = await mainStore.subirAvatar(file)
@@ -79,16 +77,13 @@ const solicitarBorradoFoto = () => {
 }
 
 const confirmarBorradoFoto = async () => {
-  console.log("👉 1. Botón del modal pulsado");
   
   if (typeof mainStore.eliminarAvatar !== 'function') {
     return;
   }
 
-  console.log("👉 2. Llamando a la base de datos...");
   const exito = await mainStore.eliminarAvatar()
   
-  console.log("👉 3. Resultado:", exito);
   if (exito) {
     mensajeStatus.value = { texto: 'Foto eliminada con éxito ✨', tipo: 'exito' }
     previewImage.value = null 
@@ -97,12 +92,10 @@ const confirmarBorradoFoto = async () => {
     mensajeStatus.value = { texto: 'Error al eliminar la foto', tipo: 'error' }
   }
   
-  mostrarModalFoto.value = false // Cierra el modal
+  mostrarModalFoto.value = false 
 }
 
-// ==========================================
-// LÓGICA DE ACTUALIZACIÓN DE PERFIL BÁSICO
-// ==========================================
+
 
 const handleUpdateInfo = async () => {
   mensajeStatus.value = { texto: '', tipo: '' }
@@ -118,9 +111,6 @@ const handleUpdateInfo = async () => {
   }
 }
 
-// ==========================================
-// LÓGICA DE CAMBIO DE CONTRASEÑA
-// ==========================================
 const handleChangePassword = async () => {
   mensajeStatus.value = { texto: '', tipo: '' }
 

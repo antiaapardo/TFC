@@ -1,12 +1,9 @@
-# dao.py (with post-fork safe lazy singletons for sql)
-
 import json
 import threading
 import pymysql
 import os
 from dotenv import load_dotenv
 
-# Cargamos las variables de entorno (credenciales seguras)
 load_dotenv()
 
 sql_db_host = os.getenv("DB_HOST", "localhost")
@@ -38,7 +35,6 @@ class _SQLProxy:
     def __getattr__(self, item):
         return getattr(get_sql(), item)
 
-# Instancia global exportable que usará dto.py
 sql = _SQLProxy()
 
 # ==========================================
@@ -54,8 +50,8 @@ class TransactionResult:
         self.success = success
         self.data = data
         self.message = message
-        self.status = status # Código interno (ej: '000', '112')
-        self.code = code     # Código HTTP asociado (ej: 200, 409, 500)
+        self.status = status
+        self.code = code 
 
 
 class MariaDB:
@@ -99,7 +95,6 @@ class MariaDB:
             if conn:
                 cur = conn.cursor()
                 cur.execute(query, parameters)
-                # Delega el formateo de los datos a search_wrapper
                 data = self.search_wrapper(cursor=cur, multiple=multiple)
                 result = TransactionResult(success=True, data=data)
                 cur.close()
@@ -130,13 +125,13 @@ class MariaDB:
                 cur = conn.cursor()
                 cur.execute(query, parameters)
                 lastrowid = cur.lastrowid
-                conn.commit() # Confirma la transacción
+                conn.commit() 
                 result = TransactionResult(success=True, data=lastrowid)
                 cur.close()
 
         except pymysql.Error as e:
             if conn is not None:
-                conn.rollback()  # Deshace los cambios en caso de error
+                conn.rollback() 
             result = self.mariadb_error_handler(e)
 
         finally:
@@ -168,7 +163,7 @@ class MariaDB:
 
         except pymysql.Error as e:
             if conn is not None:
-                conn.rollback()  # Deshace los cambios en caso de error
+                conn.rollback()
             result = self.mariadb_error_handler(e)
 
         finally:
@@ -190,7 +185,7 @@ class MariaDB:
             return parsed
 
         if cursor.rowcount > 0:
-            columns = [col[0] for col in cursor.description] # Obtiene los nombres de las columnas
+            columns = [col[0] for col in cursor.description] 
             if multiple:
                 rows_parsed = []
                 for row in cursor.fetchall():
@@ -216,18 +211,14 @@ class MariaDB:
         TransactionResult para que el DTO pueda interpretarlos fácilmente.
         """
         if isinstance(e, pymysql.IntegrityError):
-            # Error 409: Conflicto (ej: intentar registrar un email que ya existe)
             return TransactionResult(
                 success=False, message=f"Duplicate entry error: {str(e)}", status="112", code=409)
         elif isinstance(e, pymysql.DataError):
-            # Error 400: Datos inválidos o truncados
             return TransactionResult(
                 success=False, message=f"Invalid data error: {str(e)}", status="111", code=400)
         elif isinstance(e, pymysql.OperationalError):
-            # Error 500: Fallo de conexión o del servidor BD
             return TransactionResult(
                 success=False, message=f"Operational error: {str(e)}", status="100", code=500)
         else:
-            # Error genérico 500
             return TransactionResult(
                 success=False, message=f"Unknown error: {str(e)}", status="100", code=500)

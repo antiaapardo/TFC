@@ -29,12 +29,9 @@
    ========================================== */
 @media (max-width: 768px) {
   .create-btn {
-    padding: 10px 16px; /* Le quitamos un poco de "gordura" a los lados */
-    font-size: 0.9rem; /* Texto un pelín más pequeño */
+    padding: 10px 16px;
+    font-size: 0.9rem;
     
-    /* TRUCO MÓVIL: Si prefieres que el botón sea un bloque gigante de lado a lado, 
-       quita las barras y asteriscos de las dos líneas de abajo: */
-    /* width: 100%; */
-    /* justify-content: center; */
+
   }
 }

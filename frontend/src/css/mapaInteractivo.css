@@ -44,23 +44,17 @@
   margin-top: 5px;
 }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
 @media (max-width: 768px) {
   
-  /* 1. Obligamos al mapa a obedecer la altura de su contenedor padre (.map-view) */
   #map-container {
     height: 100% !important; 
     min-height: 300px;
   }
 
-  /* 2. Reducimos un poco los márgenes del popup para que quepa bien en pantallas estrechas */
   .leaflet-popup-content {
     margin: 10px !important;
   }
 
-  /* 3. Achicamos ligeramente los textos del popup */
   .popup-title {
     font-size: 0.95rem;
   }
@@ -68,4 +62,8 @@
   .popup-date, .popup-address {
     font-size: 0.85rem;
   }
+}
+.custom-pin-container {
+  background: transparent !important;
+  border: none !important;
 }

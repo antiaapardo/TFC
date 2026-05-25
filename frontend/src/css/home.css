@@ -1,42 +1,54 @@
-.home-header {
-  flex: 0 0 auto;
-}
+
 .home-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  width: 100vw;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.home-header {
+  width: 100%;
+  padding: 20px 40px 0 40px; 
+  box-sizing: border-box;
 }
 
 .main-layout { 
   display: flex; 
-  gap: 20px; 
-  padding: 0 20px 20px 20px; 
-  height: calc(100vh - 140px);
-  max-width: 1600px;
-  margin: 0 auto;
+  gap: 30px; 
+  padding: 20px 40px 80px 40px; 
+  max-width: 100%;
   width: 100%;
+  box-sizing: border-box;
+  margin: 0;
 }
 
+
 .events-grid { 
-  flex: 1; 
+  flex: 1;
   display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-  gap: 20px; 
-  overflow-y: auto; 
-  padding-right: 10px;
-  padding-bottom: 40px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+  gap: 25px; 
   align-content: start;
 }
 
+
 .map-view { 
-  width: 45%; 
-  min-width: 400px;
+  width: 40%; 
+  min-width: 350px;
+  max-width: 800px;
   border-radius: 16px; 
   overflow: hidden; 
   box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
   position: sticky;
-  top: 0;
-  height: fit-content;
+  top: 100px; 
+  height: calc(100vh - 150px); 
+}
+
+.map-view .leaflet-container {
+  height: 100% !important; 
+  width: 100%;
 }
 
 .loading-state, .error-state, .empty-state {
@@ -48,53 +60,66 @@
   grid-column: 1 / -1; 
 }
 
-.error-state { color: var(--mec-red); }
+.error-state { color: #E10818; }
 
-.events-grid::-webkit-scrollbar { width: 6px; }
-.events-grid::-webkit-scrollbar-thumb { background-color: #ddd; border-radius: 10px; }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
 @media (max-width: 768px) {
   
-  /* 1. Cambiamos la fila a columna para que se apilen */
-  .main-layout { 
-    flex-direction: column; 
-    height: auto; /* Dejamos que la página crezca de forma natural */
-    padding: 0 15px 20px 15px; /* Reducimos los márgenes laterales */
-    padding-bottom: 80px;
+  .home-header {
+    padding: 10px 15px 0 15px;
   }
 
-  /* 2. El mapa pasa a ocupar todo el ancho, pero limitamos su altura */
-/* =========================================
-     COMPORTAMIENTO DEL MAPA Y LISTA EN MÓVIL
-     ========================================= */
-     
-  /* 1. Por defecto (pestaña Explorar), ocultamos el mapa completamente */
+  .main-layout { 
+    flex-direction: column; 
+    padding: 15px 15px 100px 15px; 
+    gap: 15px;
+  }
+
   .map-view { 
     display: none; 
   }
 
-  /* 2. CUANDO PULSAMOS LA PESTAÑA MAPA */
-  .modo-mapa-movil .search-container,
-  .modo-mapa-movil .events-grid {
-    display: none; /* Ocultamos el buscador y la lista de mercadillos */
-  }
-
-  .modo-mapa-movil .map-view {
-    display: block; /* Mostramos el mapa */
-    width: 100%;
-    height: calc(100vh - 160px); /* Le damos toda la pantalla disponible */
-    border-radius: 0; /* Quitamos los bordes redondos para que parezca Google Maps */
-    box-shadow: none;
-    margin-top: -10px; /* Lo pegamos bien arriba */
-  }
-
-  /* 3. La cuadrícula de mercadillos */
   .events-grid { 
-    overflow-y: visible; /* Ahora el scroll lo hace la página entera, no solo la caja */
-    padding-right: 0; /* Ya no necesitamos el hueco para la barra de scroll interna */
+    grid-template-columns: 1fr;
     gap: 15px;
+  }
+
+  .modo-mapa-movil {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .modo-mapa-movil .home-header,
+  .modo-mapa-movil .events-grid,
+  .modo-mapa-movil .loading-state,
+  .modo-mapa-movil .error-state {
+    display: none !important; 
+  }
+
+  .modo-mapa-movil .main-layout {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100vw;
+    height: calc(100vh - 65px) !important; 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modo-mapa-movil .map-view {
+    display: block; 
+    width: 100%; 
+    height: 100% !important;
+    flex-grow: 1;
+    border-radius: 0; 
+    box-shadow: none;
+    position: relative;
+    top: 0;
+    z-index: 1; 
+  }
+
+  .modo-mapa-movil #map-container,
+  .modo-mapa-movil .leaflet-container {
+    height: 100% !important;
+    width: 100%;
   }
 }

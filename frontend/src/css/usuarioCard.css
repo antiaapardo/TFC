@@ -93,18 +93,14 @@
   color: white; 
 }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
+
 @media (max-width: 768px) {
   
-  /* 1. Reducimos el relleno interno de la tarjeta para ganar espacio */
   .profile-card {
     padding: 25px 15px;
-    border-radius: 20px; /* Suavizamos un poco el borde para pantallas pequeñas */
+    border-radius: 20px;  
   }
 
-  /* 2. Hacemos el avatar un pelín más compacto */
   .avatar-wrapper {
     width: 85px;
     height: 85px;
@@ -115,7 +111,6 @@
     font-size: 2.2rem;
   }
 
-  /* 3. Ajustamos el tamaño del nombre */
   .user-name {
     font-size: 1.3rem;
   }
@@ -124,7 +119,6 @@
     margin-bottom: 20px;
   }
 
-  /* 4. Desactivamos los efectos hover para la pantalla táctil */
   .change-photo-btn:hover {
     transform: none;
   }
@@ -134,7 +128,6 @@
     color: var(--mec-red);
   }
   
-  /* Evitamos que el botón se quede "marcado" (color sólido) al pulsarlo con el dedo */
   .primary-outline-btn:active {
     background: #fdf0f0;
   }

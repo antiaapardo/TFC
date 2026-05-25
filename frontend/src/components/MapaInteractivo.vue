@@ -1,22 +1,26 @@
 <script setup>
-import { onMounted, onUnmounted, watch, markRaw, nextTick } from 'vue';
+import { onMounted, onUnmounted, watch, markRaw } from 'vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../css/MapaInteractivo.css';
 
 import { CATEGORIAS_MEC } from '../constants/mercadillos';
 
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import iconShadowUrl from 'leaflet/dist/images/marker-shadow.png';
+const obtenerIconoPersonalizado = (colorHex) => {
+  const svgHtml = `
+    <svg width="32" height="42" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 3px 4px rgba(0,0,0,0.3));">
+      <path d="M16 0C7.16 0 0 7.16 0 16C0 27.6 14.2 40.8 14.8 41.4C15.4 42 16.6 42 17.2 41.4C17.8 40.8 32 27.6 32 16C32 7.16 24.8 0 16 0ZM16 22C12.68 22 10 19.32 10 16C10 12.68 12.68 10 16 10C19.32 10 22 12.68 22 16C22 19.32 19.32 22 16 22Z" fill="${colorHex}"/>
+    </svg>
+  `;
 
-let DefaultIcon = L.icon({
-  iconUrl: iconUrl,
-  shadowUrl: iconShadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34]
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+  return L.divIcon({
+    html: svgHtml,
+    className: 'custom-pin-container',
+    iconSize: [32, 42],
+    iconAnchor: [16, 42],
+    popupAnchor: [0, -40]
+  });
+};
 
 const props = defineProps({
   eventos: {
@@ -27,14 +31,15 @@ const props = defineProps({
 
 let map = null;
 let markerLayer = null; 
+let limitesActuales = []; 
 
 const actualizarMarcadores = (listaEventos) => {
   if (!map || !markerLayer) return;
 
   markerLayer.clearLayers();
+  limitesActuales = [];
 
   if (listaEventos && listaEventos.length > 0) {
-    const bounds = [];
     listaEventos.forEach(evento => {
       if (evento.latitud && evento.longitud) {
         const lat = parseFloat(evento.latitud);
@@ -42,7 +47,7 @@ const actualizarMarcadores = (listaEventos) => {
 
         if (!isNaN(lat) && !isNaN(lng)) {
           const posicion = [lat, lng];
-          bounds.push(posicion);
+          limitesActuales.push(posicion);
 
           const infoCat = (CATEGORIAS_MEC && CATEGORIAS_MEC[evento.id_categoria]) 
                           ? CATEGORIAS_MEC[evento.id_categoria] 
@@ -57,7 +62,9 @@ const actualizarMarcadores = (listaEventos) => {
             fechaTexto = `<small class="popup-date">📅 ${fechaObj.toLocaleDateString()}</small><br>`;
           }
 
-          const marker = L.marker(posicion)
+          const marker = L.marker(posicion, {
+            icon: obtenerIconoPersonalizado(infoCat.color)
+          })
             .bindPopup(`
               <div class="custom-popup">
                 <strong class="popup-title" style="color: ${infoCat.color};">${tituloEvento}</strong><br>
@@ -71,16 +78,18 @@ const actualizarMarcadores = (listaEventos) => {
       }
     });
 
-    if (bounds.length > 0) {
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 }); 
+    if (limitesActuales.length > 0) {
+      map.fitBounds(limitesActuales, { padding: [50, 50], maxZoom: 15 }); 
     }
+  } else {
+    map.setView([40.4168, -3.7038], 6);
   }
 };
 
 let resizeObserver = null;
 
 onMounted(() => {
-  map = markRaw(L.map('map-container').setView([40.4168, -3.7038], 12));
+  map = markRaw(L.map('map-container').setView([40.4168, -3.7038], 6));
   
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
@@ -91,7 +100,17 @@ onMounted(() => {
 
   const mapDiv = document.getElementById('map-container');
   if (mapDiv) {
-    resizeObserver = new ResizeObserver(() => map?.invalidateSize());
+    resizeObserver = new ResizeObserver(() => {
+      if (map) {
+        map.invalidateSize();
+        
+        if (limitesActuales.length > 0) {
+          setTimeout(() => {
+            map.fitBounds(limitesActuales, { padding: [50, 50], maxZoom: 15 });
+          }, 100);
+        }
+      }
+    });
     resizeObserver.observe(mapDiv);
   }
 });

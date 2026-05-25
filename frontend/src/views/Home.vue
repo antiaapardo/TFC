@@ -15,20 +15,23 @@ const mainStore = useMainStore()
 const router = useRouter()
 
 const filtroTipo = ref('')
-const filtroFecha = ref('')
+const filtroFechaInicio = ref('')
+const filtroFechaFin = ref('')
+
 const usandoCercania = ref(false)
 const userLat = ref(null)
 const userLon = ref(null)
 const radioMaximoKm = ref(10)
 
 onMounted(async () => {
-if (mainStore.categorias.length === 0) {
+  if (mainStore.categorias.length === 0) {
     await mainStore.fetchCategorias()
-  }  await mainStore.fetchEventos()
+  }  
+  await mainStore.fetchEventos()
 })
+
 const conmutarFiltroCercania = () => {
   if (usandoCercania.value) {
-    // Si ya estaba activo, lo apagamos
     usandoCercania.value = false
     return
   }
@@ -50,6 +53,7 @@ const conmutarFiltroCercania = () => {
     }
   );
 }
+
 const eventosFiltrados = computed(() => {
   if (!mainStore.eventos) return []
 
@@ -63,9 +67,34 @@ const eventosFiltrados = computed(() => {
 
   return lista.filter(e => {
     const cumpleTipo = !filtroTipo.value || e.id_categoria == filtroTipo.value
-    const cumpleFecha = !filtroFecha.value || (e.fecha_inicio && e.fecha_inicio.includes(filtroFecha.value))
     
-    // Filtro de cercanía física (asumiendo que tus eventos traen latitud y longitud del backend)
+    let cumpleFecha = true
+    
+    if (e.fecha_inicio) {
+      const fechaEvento = new Date(e.fecha_inicio)
+      fechaEvento.setHours(0, 0, 0, 0)
+
+      if (filtroFechaInicio.value && !filtroFechaFin.value) {
+        const fechaInicio = new Date(filtroFechaInicio.value)
+        fechaInicio.setHours(0, 0, 0, 0)
+        if (fechaEvento.getTime() !== fechaInicio.getTime()) cumpleFecha = false
+      } 
+      else if (filtroFechaInicio.value && filtroFechaFin.value) {
+        const fechaInicio = new Date(filtroFechaInicio.value)
+        fechaInicio.setHours(0, 0, 0, 0)
+        const fechaFin = new Date(filtroFechaFin.value)
+        fechaFin.setHours(0, 0, 0, 0)
+        if (fechaEvento < fechaInicio || fechaEvento > fechaFin) cumpleFecha = false
+      }
+      else if (!filtroFechaInicio.value && filtroFechaFin.value) {
+        const fechaFin = new Date(filtroFechaFin.value)
+        fechaFin.setHours(0, 0, 0, 0)
+        if (fechaEvento > fechaFin) cumpleFecha = false
+      }
+    } else if (filtroFechaInicio.value || filtroFechaFin.value) {
+      cumpleFecha = false
+    }
+    
     let cumpleCercania = true
     if (usandoCercania.value && userLat.value && userLon.value) {
       const distancia = calcularDistanciaEnKm(userLat.value, userLon.value, e.latitud, e.longitud)
@@ -101,7 +130,8 @@ const calcularDistanciaEnKm = (lat1, lon1, lat2, lon2) => {
     <header class="home-header">
       <SearchBar 
         v-model:filtroTipo="filtroTipo" 
-        v-model:filtroFecha="filtroFecha" 
+        v-model:filtroFechaInicio="filtroFechaInicio" 
+        v-model:filtroFechaFin="filtroFechaFin" 
         :categorias="mainStore.categorias"
         :usandoUbicacion="usandoCercania"
         @activarCercania="conmutarFiltroCercania"

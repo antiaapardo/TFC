@@ -27,7 +27,6 @@ def get_events():
     result = sql.find(query=query, multiple=True)
     
     if result.success and result.data:
-        # TRADUCTOR TEMPORAL: BD en inglés -> Vue en español
         eventos_formateados = []
         for e in result.data:
             eventos_formateados.append({
@@ -65,6 +64,31 @@ def add_event(id_organizador, id_categoria, titulo, descripcion, direccion_texto
         return response_wrapper("000", "Mercadillo publicado con éxito", {"id_evento": result.data}), 201
     else:
         return response_wrapper("100", "Error al publicar mercadillo en BD"), 500
+
+def update_event_info(id_evento, id_categoria, titulo, descripcion, direccion_texto, latitud, longitud, fecha_inicio, fecha_fin):
+    """
+    Actualiza los datos de un evento (mercadillo) existente.
+    """
+    query = """
+        UPDATE events 
+        SET category_id = %s, 
+            title = %s, 
+            description = %s, 
+            address = %s, 
+            latitude = %s, 
+            longitude = %s, 
+            start_date = %s, 
+            end_date = %s
+        WHERE event_id = %s
+    """
+    parameters = (id_categoria, titulo, descripcion, direccion_texto, latitud, longitud, fecha_inicio, fecha_fin, id_evento)
+
+    result = sql.modify(query=query, parameters=parameters)
+
+    if result.success:
+        return response_wrapper("000", "Mercadillo actualizado con éxito", {"id_evento": id_evento}), 200
+    else:
+        return response_wrapper("100", "Error al actualizar el mercadillo en BD"), 500
     
 def delete_event(id_evento):
     """
@@ -87,7 +111,6 @@ def get_categories():
     result = sql.find(query=query, multiple=True)
     
     if result.success and result.data:
-        # TRADUCTOR TEMPORAL
         categorias_formateadas = []
         for c in result.data:
             categorias_formateadas.append({
@@ -154,7 +177,6 @@ def get_favorite(id_usuario):
     result = sql.find(query=query, multiple=True, parameters=parameters)
     
     if result.success and result.data:
-         # TRADUCTOR TEMPORAL
          favoritos_formateados = []
          for f in result.data:
              favoritos_formateados.append({'id_evento': f.get('event_id')})
@@ -170,7 +192,6 @@ def get_favorite(id_usuario):
 # ==========================================
 
 def send_verification_email(email_destino, token):
-    # ... (Sin cambios, es Python puro) ...
     mi_email = "info.mercadillosencasa@gmail.com" 
     mi_password = "aqoxxrkjkfascxlp" 
     
@@ -250,7 +271,6 @@ def login_user(email, password):
     if check_password_hash(user['password'], password):
         del user['password']
         
-        # TRADUCTOR TEMPORAL
         user_formateado = {
             'id_usuario': user.get('user_id'),
             'nombre_completo': user.get('users_name'),
@@ -342,3 +362,7 @@ def update_event_image(id_evento, url_imagen):
         return response_wrapper("000", "Imagen del evento actualizada", {"imagen_url": url_imagen}), 200
     else:
         return response_wrapper("100", "Error al actualizar la imagen del evento"), 500
+    
+def delete_past_events():
+    query = "DELETE FROM events WHERE start_date < CURDATE()"
+    sql.modify(query=query, parameters=())

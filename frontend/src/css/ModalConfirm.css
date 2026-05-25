@@ -88,12 +88,8 @@
   transform: none;
 }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
 @media (max-width: 768px) {
   
-  /* Reducimos un poco el relleno para que no sea tan masivo en el teléfono */
   .confirm-card {
     padding: 25px 20px;
     border-radius: 16px;
@@ -108,21 +104,17 @@
     font-size: 1.25rem;
   }
 
-  /* ¡EL TRUCO! Apilamos los botones en columna invertida.
-     Así el botón principal (rojo) queda arriba y el de cancelar debajo. */
   .confirm-actions {
     flex-direction: column-reverse;
     gap: 10px;
   }
 
-  /* Hacemos que los botones ocupen todo el ancho y sean cómodos para el dedo */
   .btn-cancel, .btn-danger {
     width: 100%;
     padding: 14px;
     font-size: 1.05rem;
   }
 
-  /* Desactivamos el saltito del hover para la pantalla táctil */
   .btn-danger:hover {
     transform: none;
   }

@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
 
-// Importamos el CSS separado
 import '../css/VerificarCuenta.css'
 
 const route = useRoute()
@@ -12,7 +11,7 @@ const mainStore = useMainStore()
 
 const mensaje = ref('Verificando tu cuenta...')
 const exito = ref(false)
-const cargando = ref(true) // MEJORA: Variable de estado para el icono de carga
+const cargando = ref(true)
 
 onMounted(async () => {
   const token = route.params.token
@@ -27,7 +26,6 @@ onMounted(async () => {
     mensaje.value = 'No se ha encontrado ningún código de verificación.'
   }
   
-  // Pase lo que pase, ya hemos terminado de cargar
   cargando.value = false 
 })
 

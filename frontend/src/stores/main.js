@@ -31,9 +31,7 @@ const manageErrors = (functionName, error, callback, customMessage) => {
 }
 
 export const useMainStore = defineStore('main', {
-  // ==========================================
-  // STATE: El almacén de datos
-  // ==========================================
+
   state: () => ({
     apiEndpoint: API_URL,
     currentUser: JSON.parse(localStorage.getItem('mec_user')) || null,
@@ -51,13 +49,9 @@ export const useMainStore = defineStore('main', {
     userId: (state) => (state.currentUser ? state.currentUser.id_usuario : null),
   },
 
-  // ==========================================
-  // ACTIONS: Funciones que "hacen cosas"
-  // ==========================================
+
   actions: {
-    // ==========================================
-    // SISTEMA DE AUTENTICACIÓN (LOGIN/REGISTRO)
-    // ==========================================
+
     async registrarUsuario(datosUsuario) {
       this.isLoading = true;
       this.lastError = null;
@@ -120,9 +114,7 @@ export const useMainStore = defineStore('main', {
       localStorage.removeItem('mec_user');
     },
 
-    // ==========================================
-    // EVENTOS Y CATEGORÍAS
-    // ==========================================
+
     async eliminarEvento(idEvento) {
       this.isLoading = true;
       this.lastError = null;
@@ -135,6 +127,35 @@ export const useMainStore = defineStore('main', {
         return false;
       } catch (error) {
         this.lastError = manageErrors('eliminarEvento', error);
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    async editarEvento(datosFormulario) {
+      this.isLoading = true;
+      this.lastError = null;
+      try {
+        const payload = {
+          id_categoria: datosFormulario.id_categoria,
+          titulo: datosFormulario.titulo,
+          descripcion: datosFormulario.descripcion,
+          direccion_texto: datosFormulario.direccion_texto,
+          latitud: datosFormulario.latitud,
+          longitud: datosFormulario.longitud,
+          fecha_inicio: datosFormulario.fecha_inicio
+        };
+
+        const response = await axios.put(`http://localhost:5000/api/eventos/${datosFormulario.id_evento}`, payload);
+        
+        if (response.data.success) {
+          return true;
+        } else {
+          this.lastError = response.data.status.msg;
+          return false;
+        }
+      } catch (error) {
+        this.lastError = error.response?.data?.status?.msg || "Error de conexión con el servidor.";
         return false;
       } finally {
         this.isLoading = false;
@@ -154,7 +175,6 @@ export const useMainStore = defineStore('main', {
       }
     },
 
-    // Unificado a async/await
     async fetchEventos(callback = null) {
       this.lastError = null;
       this.isLoading = true;
@@ -175,16 +195,12 @@ async publicarEvento(eventoData, callback) {
       this.isLoading = true;
       this.lastError = null;
       try {
-        // 1. Mandamos los datos a Flask
         const res = await axios.post(`${this.apiEndpoint}/eventos`, eventoData);
         
-        // 2. Refrescamos la lista de eventos
         await this.fetchEventos(); 
         
         if (callback) callback({ type: 'success', msg: 'Mercadillo publicado con éxito' });
-        
-        // 3. ¡LA MAGIA! 
-        // res.data.data es donde Python ha metido tu {"id_evento": X}
+
         return res.data.data; 
         
       } catch (error) {
@@ -199,7 +215,6 @@ async publicarEvento(eventoData, callback) {
       try {
         const formData = new FormData();
         
-        // Recorremos el array y metemos todas las imágenes bajo el mismo nombre: 'imagenes'
         files.forEach(file => {
           formData.append('imagenes', file); 
         });
@@ -215,11 +230,7 @@ async publicarEvento(eventoData, callback) {
       }
     },
 
-    // ==========================================
-    // FAVORITOS
-    // ==========================================
     async fetchFavoritos() {
-      // Usamos el getter seguro
       const idUsuario = this.userId;
       if (!idUsuario) return;
 
@@ -257,9 +268,7 @@ async publicarEvento(eventoData, callback) {
       }
     },
 
-   // ==========================================
-    // PERFIL DE USUARIO
-    // ==========================================
+
 async actualizarPerfil(datos) {
       this.isLoading = true;
       this.lastError = null;
@@ -307,13 +316,10 @@ async subirAvatar(file) {
       this.isLoading = true;
       this.lastError = null;
       try {
-        // 1. Le decimos al backend que borre la foto de la base de datos
         await axios.delete(`${this.apiEndpoint}/usuarios/${this.currentUser.id_usuario}/avatar`);
 
-        // 2. Borramos la foto de la memoria de Vue
         this.currentUser.foto_url = null;
         
-        // 3. Actualizamos el LocalStorage para que no vuelva a aparecer al hacer F5
         localStorage.setItem('mec_user', JSON.stringify(this.currentUser));
         
         return true;

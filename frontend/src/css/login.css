@@ -129,29 +129,23 @@
   font-weight: 700;
 }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
+
 @media (max-width: 768px) {
   
-  /* Reducimos el espacio exterior para aprovechar la pantalla */
   .auth-container {
     padding: 15px;
   }
 
-  /* ¡LA CLAVE! Reducimos el padding interno a la mitad para que los inputs respiren */
   .auth-card {
     padding: 30px 20px;
     border-radius: 20px;
   }
 
-  /* Reducimos un poquito el tamaño de la fuente del título */
   .auth-title {
     font-size: 1.5rem;
     margin-bottom: 5px;
   }
 
-  /* Hacemos el subtítulo un poco más compacto */
   .auth-subtitle {
     margin-bottom: 20px;
     font-size: 0.9rem;

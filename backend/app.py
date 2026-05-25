@@ -3,7 +3,7 @@ from flask_cors import CORS
 from dto import (get_events, get_categories, add_favorite, 
                  remove_favorite, get_favorite, register_user, 
                  login_user, add_event, delete_event, 
-                 verify_user, response_wrapper, update_user_foto, update_user_info, change_password, update_event_image)
+                 verify_user, response_wrapper, update_user_foto, update_user_info, change_password,delete_past_events, update_event_image, update_event_info)
 import os
 import shutil
 from werkzeug.utils import secure_filename
@@ -11,10 +11,6 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 CORS(app)
 
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'static', 'uploads', 'avatars')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ==========================================
 # RUTAS DE EVENTOS Y CATEGORÍAS
@@ -34,6 +30,7 @@ def get_eventos():
     Notas:
         No requiere autenticación previa.
     """
+    delete_past_events()
     res, code = get_events()
     return make_response(jsonify(res), code)
 
@@ -41,15 +38,6 @@ def get_eventos():
 def create_evento():
     """
     Crea un nuevo evento (mercadillo) a través de una petición HTTP POST.
-
-    Parámetros:
-        Ninguno por URL. Los datos se extraen del body de la petición (JSON).
-
-    Retorna:
-        Response: Una respuesta de Flask en formato JSON conteniendo el ID del evento creado o el resultado de la operación.
-
-    Notas:
-        El JSON debe contener los campos obligatorios del evento (id_categoria, titulo, latitud, longitud).
     """
     body = request.get_json(silent=True)
     if not body:
@@ -75,26 +63,68 @@ def create_evento():
         fecha_fin = fecha_inicio 
         
     if latitud is None or longitud is None:
-        latitud = 40.4168
-        longitud = -3.7038
+         return make_response(jsonify(response_wrapper("112", "Faltan las coordenadas geográficas de la dirección")), 400)
 
     res, code = add_event(id_organizador, id_categoria, titulo, descripcion, direccion_texto, latitud, longitud, fecha_inicio, fecha_fin, foto_url)
+    return make_response(jsonify(res), code)
+@app.route("/api/eventos/<int:id_evento>", methods=["PUT"])
+def edit_evento(id_evento):
+    """
+    Modifica un evento existente.
+    """
+    body = request.get_json(silent=True)
+    if not body:
+         return make_response(jsonify(response_wrapper("111", "Datos vacíos o JSON inválido")), 400)
+
+    id_categoria = body.get('id_categoria')
+    titulo = body.get('titulo')
+    descripcion = body.get('descripcion', '')
+    direccion_texto = body.get('direccion_texto')
+    latitud = body.get('latitud')
+    longitud = body.get('longitud')
+    fecha_inicio = body.get('fecha_inicio')
+    
+    fecha_fin = body.get('fecha_fin')
+    if not fecha_fin:
+        fecha_fin = fecha_inicio 
+        
+    res, code = update_event_info(id_evento, id_categoria, titulo, descripcion, direccion_texto, latitud, longitud, fecha_inicio, fecha_fin)
     return make_response(jsonify(res), code)
 
 @app.route("/api/eventos/<int:id_evento>", methods=["DELETE"])
 def delete_evento(id_evento):
     """
-    Elimina un evento específico a través de una petición HTTP DELETE.
-
-    Parámetros:
-        id_evento (int): El ID único del evento a eliminar.
-
-    Retorna:
-        Response: Una respuesta de Flask en formato JSON indicando el éxito o fracaso de la eliminación.
+    Elimina un evento específico de la BD y pulveriza su carpeta física
+    esquivando los bloqueos de permisos de Windows.
     """
     res, code = delete_event(id_evento)
-    return make_response(jsonify(res), code)
+    
+    if code == 200:
+        try:
+            import stat  
+            
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            carpeta_evento = os.path.join(base_path, 'static', 'img_eventos', str(id_evento))
+            
+            if os.path.exists(carpeta_evento):
+                for root, dirs, files in os.walk(carpeta_evento, topdown=False):
+                    for name in files:
+                        archivo_path = os.path.join(root, name)
+                        os.chmod(archivo_path, stat.S_IWRITE)
+                        os.remove(archivo_path)
+                    for name in dirs:
+                        subcarpeta_path = os.path.join(root, name)
+                        os.chmod(subcarpeta_path, stat.S_IWRITE)
+                        os.rmdir(subcarpeta_path)
+                
+                os.chmod(carpeta_evento, stat.S_IWRITE)
+                os.rmdir(carpeta_evento)
+                print(f"🗑️ Carpeta con ID {id_evento} pulverizada por completo de static/img_eventos/")
+                
+        except Exception as e:
+            print(f"⚠️ Error al borrar la carpeta física del evento {id_evento}: {e}")
 
+    return make_response(jsonify(res), code)
 @app.route('/api/eventos/<int:id_evento>/imagenes', methods=['POST'])
 def subir_imagenes_evento(id_evento):
     try:

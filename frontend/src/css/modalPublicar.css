@@ -21,7 +21,14 @@
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
   font-family: 'Nunito', sans-serif;
   position: relative;
+  
+
+  max-height: 90vh;
+  overflow-y: auto;
 }
+
+.modal-content::-webkit-scrollbar { width: 6px; }
+.modal-content::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 10px; }
 
 .modal-header {
   display: flex;
@@ -140,21 +147,15 @@
   color: #27ae60;
 }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
 @media (max-width: 768px) {
   
   .modal-content {
-    width: 92%; /* Dejamos un pequeño margen lateral para que no pegue a los bordes del teléfono */
-    padding: 20px 15px; /* Reducimos el relleno interior para ganar espacio útil */
+    width: 92%; 
+    padding: 20px 15px; 
     border-radius: 16px;
-    
-    /* ¡VITAL PARA MÓVILES! 
-       Evita que el modal sea más alto que la pantalla y permite hacer scroll 
-       por dentro si el teclado virtual tapa el botón de enviar. */
-    max-height: 90vh; 
-    overflow-y: auto; 
+
+    max-height: calc(100dvh - 140px); 
+    margin-bottom: 70px; 
   }
 
   .modal-header {
@@ -162,15 +163,14 @@
   }
 
   .modal-header h2 {
-    font-size: 1.3rem; /* Ajustamos el tamaño del título */
+    font-size: 1.3rem; 
   }
 
   .modal-form input, 
   .modal-form select {
-    padding: 10px 12px; /* Reducimos mínimamente la altura de los inputs */
+    padding: 10px 12px; 
   }
 
-  /* Desactivamos los efectos hover para pantallas táctiles */
   .close-btn:hover {
     background: #f0f0f0;
     color: #666;

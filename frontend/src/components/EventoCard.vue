@@ -20,12 +20,12 @@ const toggleFavorito = () => {
 }
 
 const infoCategoria = computed(() => {
-  const categoriaReal = mainStore.categorias.find(c => c.id_categoria == props.evento.id_categoria)
+  const categoriaConstante = CATEGORIAS_MEC[props.evento.id_categoria]
 
-  if (categoriaReal) {
+  if (categoriaConstante) {
     return { 
-      nombre: categoriaReal.nombre, 
-      color: CATEGORIAS_MEC[props.evento.id_categoria]?.color || '#E10818' 
+      nombre: categoriaConstante.nombre, 
+      color: categoriaConstante.color 
     }
   }
 

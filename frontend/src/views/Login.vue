@@ -21,12 +21,10 @@ const form = reactive({
 const mensajeError = ref('')
 const mensajeExito = ref('')    
 
-// MEJORA: Función para limpiar el formulario al cambiar de pestaña
 const cambiarModo = (modoLogin) => {
   isLogin.value = modoLogin;
   mensajeError.value = '';
   mensajeExito.value = '';
-  // Opcional: limpiar la contraseña al cambiar
   form.password = '';
 }
 
@@ -35,17 +33,14 @@ const handleSubmit = async () => {
   mensajeExito.value = ''
   
   if (isLogin.value) {
-    // 1. CORREGIDO: Pasamos los dos parámetros sueltos separados por coma
     const exito = await mainStore.loginUsuario(form.email, form.password)
     
     if (exito) {
       router.push('/')
     } else {
-      // 2. CORREGIDO: Leemos el mensaje de la variable estándar de la arquitectura
       mensajeError.value = mainStore.lastError || 'Credenciales incorrectas'
     }
   } else {
-    // Aquí el registro sí enviaba un objeto, y en el store espera un objeto, así que estaba bien
     const exito = await mainStore.registrarUsuario({ ...form })
     
     if (exito) {

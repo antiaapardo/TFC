@@ -1,7 +1,11 @@
 .favoritos-container {
-  padding: 40px 20px;
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100vw;
+  max-width: 100% !important;
+  padding: 40px;
+  box-sizing: border-box;
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  overflow-x: hidden;
 }
 
 .favoritos-header {
@@ -15,6 +19,7 @@
   font-family: 'Nunito', sans-serif;
   color: #222;
   margin: 0;
+  font-weight: 800;
 }
 
 .volver-link {
@@ -42,36 +47,37 @@
   margin-bottom: 10px;
 }
 
-
 .favoritos-grid {
-  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
   width: 100%;
+  padding: 0;
 }
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
+
 @media (max-width: 768px) {
-  
-  /* Reducimos el espacio superior e inferior de toda la página */
   .favoritos-container {
-    padding: 20px 15px;
+    padding: 20px 15px 100px 15px;
   }
 
-  /* Acercamos el título a las tarjetas */
   .favoritos-header {
     margin-bottom: 20px;
   }
 
-  /* Hacemos el título un poco más adaptado a la pantalla */
   .favoritos-title {
     font-size: 1.4rem;
   }
 
-  /* Quitamos un poco de "aire" a la caja de cuando no hay favoritos */
+  .volver-link {
+    display: none;
+  }
+
   .favoritos-empty-state {
     padding: 30px 15px;
   }
-  .volver-link {
-    display: none
+
+  .favoritos-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
-} 
+}

@@ -1,32 +1,34 @@
+
 #app { 
-  font-family: 'Nunito', sans-serif; /* Usamos la tipografía de MEC */
-  max-width: 1400px;
+  font-family: 'Nunito', sans-serif;
+  max-width: 100%;; 
   margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
 
 .header { 
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
-  padding: 20px; 
+  padding: 15px 40px;
   border-bottom: 1px solid #eee; 
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.logo-area { display: flex; align-items: center; gap: 15px; }
+.logo-area { 
+  display: flex; 
+  align-items: center; 
+  gap: 15px; 
+  margin-right: auto;
+}
+
 .main-logo { height: 60px; border-radius: 12px; }
-
-.title-info h1 { 
-  margin: 0; 
-  font-size: 1.5rem; 
-  color: var(--mec-text);
-  font-weight: 800;
-}
-
-.subtitle { 
-  margin: 0; 
-  font-size: 0.9rem; 
-  color: var(--mec-gray); 
-}
+.title-info h1 { margin: 0; font-size: 1.5rem; color: #222; font-weight: 800; }
+.subtitle { margin: 0; font-size: 0.9rem; color: #717171; }
 
 .nav-user { 
   display: flex; 
@@ -42,15 +44,13 @@
   transition: transform 0.2s ease;
 }
 
-.nav-btn:hover {
-  transform: scale(1.1);
-}
+.nav-btn:hover { transform: scale(1.1); }
 
 .profile-circle { 
   text-decoration: none;
   width: 40px; 
   height: 40px; 
-  background: var(--mec-red); /* Usamos el rojo MEC */
+  background: #E10818; 
   color: white; 
   border-radius: 50%; 
   display: flex; 
@@ -62,21 +62,12 @@
   box-shadow: 0 4px 10px rgba(225, 218, 8, 0.2);
 }
 
-.profile-circle:hover {
-  transform: scale(1.05);
-}
+.profile-circle:hover { transform: scale(1.05); }
 
-/* ==========================================
-   MENÚ DESPLEGABLE (NAVBAR)
-   ========================================== */
-.dropdown-container {
-  position: relative;
-  display: inline-block;
-}
-
+.dropdown-container { position: relative; display: inline-block; }
 .dropdown-menu {
   position: absolute;
-  top: 60px; /* Ajusta este valor si tu header es más alto/bajo */
+  top: 60px; 
   right: 0;
   background-color: white;
   min-width: 220px;
@@ -86,7 +77,6 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: 'Nunito', sans-serif;
   animation: fadeInDown 0.2s ease-out;
 }
 
@@ -95,137 +85,88 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.dropdown-header {
-  padding: 15px;
-  background-color: #f8f9fc;
-}
-
-.dropdown-header strong {
-  display: block;
-  color: #2c3e50;
-  font-size: 1rem;
-}
-
-.dropdown-header span {
-  display: block;
-  color: #7f8c8d;
-  font-size: 0.8rem;
-  margin-top: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.dropdown-menu hr {
-  margin: 0;
-  border: none;
-  border-top: 1px solid #eee;
-}
-
+.dropdown-header { padding: 15px; background-color: #f8f9fc; }
+.dropdown-header strong { display: block; color: #2c3e50; font-size: 1rem; }
+.dropdown-header span { display: block; color: #7f8c8d; font-size: 0.8rem; margin-top: 3px; }
+.dropdown-menu hr { margin: 0; border: none; border-top: 1px solid #eee; }
 .dropdown-item {
-  padding: 12px 15px;
-  text-decoration: none;
-  color: #333;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.2s;
-  font-family: 'Nunito', sans-serif;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 12px 15px; text-decoration: none; color: #333; background: none; 
+  border: none; text-align: left; font-size: 0.95rem; cursor: pointer; 
+  display: flex; align-items: center; gap: 8px; transition: background 0.2s; width: 100%;
 }
+.dropdown-item:hover { background-color: #f0f0f0; }
+.logout-item { color: #E10818; }
+.logout-item:hover { background-color: #fdedec; }
 
-.dropdown-item:hover {
-  background-color: #f0f0f0;
-}
 
-.logout-item {
-  color: #E10818;
-}
 
-.logout-item:hover {
-  background-color: #fdedec;
-}
-/* Ocultamos la barra inferior en ordenadores */
-.bottom-nav {
-  display: none;
-}
+.bottom-nav { display: none; }
+.mobile-menu-btn, .mobile-dropdown-menu { display: none !important; }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
+
+
 @media (max-width: 768px) {
-  .header {
-    padding: 10px 15px; 
-  }
-
+  
+  .header { padding: 10px 15px; }
   .main-logo { height: 40px; }
   .title-info h1 { font-size: 1.1rem; }
   .subtitle { display: none; }
 
-  /* 1. OCULTAMOS EL CORAZÓN Y EL PERFIL DE ARRIBA */
-  .nav-user {
-    display: none; 
+  .nav-user { display: none !important; }
+  
+  .mobile-menu-btn {
+    display: block !important;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #2c3e50;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: auto; 
+  }
+
+  .mobile-dropdown-menu {
+    display: flex !important;
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    right: 15px;
+    background: white;
+    min-width: 220px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 10000;
+  }
+
+  .bottom-nav {
+    display: flex; position: fixed; bottom: 0; left: 0; width: 100%;
+    background: white; border-top: 1px solid #ebebeb;
+    justify-content: space-around; padding: 12px 0 25px 0; z-index: 9999;
+  }
+  .bottom-nav-item {
+    display: flex; flex-direction: column; align-items: center;
+    text-decoration: none; color: #717171; font-size: 0.65rem; font-weight: 600; gap: 4px;
+  }
+  .nav-icon { font-size: 1.5rem; }
+  .bottom-nav-item.icono-activo, .bottom-nav-item.router-link-active { color: #E10818; }
+
+  .profile-circle-nav {
+    width: 26px; height: 26px; border-radius: 50%; background: #E10818; color: white;
+    display: flex; align-items: center; justify-content: center; font-weight: bold;
+    font-size: 0.8rem; overflow: hidden; margin-bottom: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .profile-circle-nav img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+@media (min-width: 769px) {
+  
+  .header {
+    max-width: 100vw; 
+    width: 100%;
+    margin: 0;
   }
   
-  /* 2. ESTILOS DE LA BARRA INFERIOR (Estilo Airbnb) */
   .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: white;
-    border-top: 1px solid #ebebeb;
-    justify-content: space-around;
-    padding: 12px 0 25px 0; /* Padding extra abajo para la raya del iPhone */
-    z-index: 9999;
-  }
-
-  .bottom-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #717171; /* Gris apagado por defecto */
-    font-size: 0.65rem;
-    font-weight: 600;
-    gap: 4px;
-  }
-
-  .nav-icon {
-    font-size: 1.5rem;
-  }
-
-  /* Cuando estás en esa página, se pone rojo MEC */
-  .bottom-nav-item.router-link-active {
-    color: var(--mec-red);
+    display: none !important;
   }
 }
-/* Estilos para el mini círculo de perfil en la barra inferior */
-  .profile-circle-nav {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: var(--mec-red);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.8rem;
-    overflow: hidden;
-    margin-bottom: 2px; /* Un pequeño ajuste para que alinee con los emojis */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
-
-  .profile-circle-nav img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }

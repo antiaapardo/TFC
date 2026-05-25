@@ -15,7 +15,7 @@ h1, h2, h3, h4, h5, h6, button, input, textarea, select {
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #fef9e7 !important; /* Amarillo pastel suave */
+  background-color: #fef9e7 !important; 
   min-height: 100vh;
   width: 100%;
 }

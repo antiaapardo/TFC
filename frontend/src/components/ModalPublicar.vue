@@ -1,7 +1,14 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useMainStore } from '../stores/main'
 import '../css/ModalPublicar.css'
+
+const props = defineProps({
+  eventoEditar: {
+    type: Object,
+    default: null
+  }
+})
 
 const emit = defineEmits(['close', 'actualizar'])
 const mainStore = useMainStore()
@@ -11,13 +18,10 @@ const mensaje = ref('')
 const tipoMensaje = ref('')
 const selectedFiles = ref([])
 
-onMounted(() => {
-  if (mainStore.categorias.length === 0) {
-    mainStore.fetchCategorias()
-  }
-})
+const esModoEdicion = computed(() => props.eventoEditar !== null)
 
 const form = reactive({
+  id_evento: null,
   id_usuario: mainStore.userId, 
   titulo: '',
   id_categoria: '',
@@ -29,74 +33,118 @@ const form = reactive({
   foto_url: '' 
 })
 
+onMounted(() => {
+  if (mainStore.categorias.length === 0) {
+    mainStore.fetchCategorias()
+  }
+
+  if (props.eventoEditar) {
+    let fechaFormateada = ''
+    if (props.eventoEditar.fecha_inicio) {
+      fechaFormateada = props.eventoEditar.fecha_inicio.split('T')[0] 
+
+      const dateObj = new Date(props.eventoEditar.fecha_inicio)
+      fechaFormateada = dateObj.toISOString().split('T')[0]
+    }
+
+    Object.assign(form, {
+      id_evento: props.eventoEditar.id_evento,
+      titulo: props.eventoEditar.titulo,
+      id_categoria: props.eventoEditar.id_categoria,
+      direccion_texto: props.eventoEditar.direccion_texto,
+      fecha_inicio: fechaFormateada,
+      descripcion: props.eventoEditar.descripcion || '',
+      latitud: props.eventoEditar.latitud,
+      longitud: props.eventoEditar.longitud
+    })
+  }
+})
+
 const onFilesSelected = (event) => {
   const files = Array.from(event.target.files)
-  
-  // Filtramos para asegurarnos de que solo sean imágenes
   selectedFiles.value = files.filter(file => file.type.startsWith('image/'))
 }
 
 const obtenerCoordenadas = async (direccion) => {
   try {
-    let textoBusqueda = direccion.trim();
-    
-    if (!textoBusqueda.toLowerCase().includes('madrid')) {
-      textoBusqueda = `${textoBusqueda}, Madrid`;
-    }
-    
-    const queryBusqueda = `${textoBusqueda}, España`;
+    let queryBusqueda = `${direccion.trim()}, España`;
     console.log("🔍 Buscando en el mapa:", queryBusqueda);
     
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryBusqueda)}&limit=1&countrycodes=es&addressdetails=1`;
-    
-    const respuesta = await fetch(url, {
-      headers: { 'Accept-Language': 'es' }
-    });
-    const datos = await respuesta.json();
+    let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryBusqueda)}&limit=1&countrycodes=es`;
+    let respuesta = await fetch(url, { headers: { 'Accept-Language': 'es' }});
+    let datos = await respuesta.json();
     
     if (datos && datos.length > 0) {
-      const resultado = datos[0];
-      return { 
-        lat: parseFloat(resultado.lat), 
-        lon: parseFloat(resultado.lon) 
+      return { lat: parseFloat(datos[0].lat), lon: parseFloat(datos[0].lon) };
+    }
+
+    const partes = direccion.split(',');
+    
+    if (partes.length > 1) {
+      const ciudad = partes[partes.length - 1].trim();
+      queryBusqueda = `${ciudad}, España`;
+      console.log("🔍 Buscando ciudad:", queryBusqueda);
+      
+      url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(queryBusqueda)}&limit=1&countrycodes=es`;
+      respuesta = await fetch(url, { headers: { 'Accept-Language': 'es' }});
+      datos = await respuesta.json();
+      
+      if (datos && datos.length > 0) {
+        return { lat: parseFloat(datos[0].lat), lon: parseFloat(datos[0].lon) };
       }
     }
-  } catch (error) {
-    console.error("❌ Error en la geocodificación:", error)
-  }
-  return null
-}
 
-// ¡AQUÍ ESTABA EL FALLO! Faltaba envolver esto en la función publicar
+  } catch (error) {
+    console.error("❌ Error en la geocodificación:", error);
+  }
+  return null;
+};
+
 const publicar = async () => {
   isSubmitting.value = true
   mensaje.value = ''
   
-  // 0. Sacamos las coordenadas antes de nada
-  const coords = await obtenerCoordenadas(form.direccion_texto)
-  if (coords) {
-    form.latitud = coords.lat
-    form.longitud = coords.lon
+  if (!esModoEdicion.value || form.direccion_texto !== props.eventoEditar?.direccion_texto) {
+    const coords = await obtenerCoordenadas(form.direccion_texto)
+    
+    if (coords) {
+      form.latitud = coords.lat
+      form.longitud = coords.lon
+    } else {
+      mensaje.value = '❌ No encontramos esa dirección. Prueba a poner solo la ciudad (Ej: Vigo).'
+      tipoMensaje.value = 'error'
+      isSubmitting.value = false
+      return; 
+    }
   }
 
-  // 1. Creamos el evento
-  const eventoCreado = await mainStore.publicarEvento(form)
+  let exito = false;
+  let idEventoFinal = form.id_evento;
 
-  if (eventoCreado && eventoCreado.id_evento) {
-    console.log(`✅ Mercadillo creado. ID: ${eventoCreado.id_evento}`);
-    console.log(`📸 Cantidad de fotos a subir: ${selectedFiles.value.length}`);
-    
-    // 2. Subimos las fotos (SI HAY ALGUNA)
+  if (esModoEdicion.value) {
+    exito = await mainStore.editarEvento(form)
+    if (!exito) {
+      mensaje.value = mainStore.lastError || 'Hubo un problema al editar.'
+      tipoMensaje.value = 'error'
+      isSubmitting.value = false
+      return;
+    }
+  } else {
+    const eventoCreado = await mainStore.publicarEvento(form)
+    if (eventoCreado && eventoCreado.id_evento) {
+      exito = true;
+      idEventoFinal = eventoCreado.id_evento;
+    }
+  }
+
+  if (exito) {
     if (selectedFiles.value.length > 0) {
       mensaje.value = 'Subiendo las fotos... ⏳'
       tipoMensaje.value = 'success'
-      
-      // Llamamos a la función de subir imágenes
-      await mainStore.subirImagenesEvento(eventoCreado.id_evento, selectedFiles.value)
-      console.log("✅ Proceso de fotos terminado.");
+      await mainStore.subirImagenesEvento(idEventoFinal, selectedFiles.value)
     }
 
-    mensaje.value = '¡Mercadillo publicado con éxito! 🎉'
+    mensaje.value = esModoEdicion.value ? '¡Cambios guardados! 🎉' : '¡Mercadillo publicado con éxito! 🎉'
     tipoMensaje.value = 'success'
   
     setTimeout(() => {
@@ -104,7 +152,7 @@ const publicar = async () => {
       emit('close')
     }, 1500)
   } else {
-    mensaje.value = 'Error al obtener el ID del mercadillo.'
+    mensaje.value = 'Error al procesar el mercadillo.'
     tipoMensaje.value = 'error'
   }
   
@@ -117,7 +165,7 @@ const publicar = async () => {
     <div class="modal-content">
       
       <div class="modal-header">
-        <h2>Nuevo Mercadillo</h2>
+        <h2>{{ esModoEdicion ? 'Editar Mercadillo' : 'Nuevo Mercadillo' }}</h2>
         <button class="close-btn" @click="$emit('close')">×</button>
       </div>
 
@@ -148,8 +196,9 @@ const publicar = async () => {
           <label>FECHA DE INICIO</label>
           <input v-model="form.fecha_inicio" type="date" required />
         </div>
+        
         <div class="form-group">
-            <label>Fotos del Mercadillo (Puedes elegir varias)</label>
+            <label>{{ esModoEdicion ? 'Añadir nuevas fotos (Opcional)' : 'Fotos del Mercadillo (Puedes elegir varias)' }}</label>
             <input 
               type="file" 
               accept="image/*" 
@@ -177,7 +226,8 @@ const publicar = async () => {
         </div>
 
         <button type="submit" class="btn-submit" :disabled="isSubmitting">
-          {{ isSubmitting ? 'Buscando coordenadas y publicando...' : 'Publicar ahora' }}
+          <span v-if="isSubmitting">Procesando...</span>
+          <span v-else>{{ esModoEdicion ? 'Guardar Cambios' : 'Publicar ahora' }}</span>
         </button>
 
       </form>

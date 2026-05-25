@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useMainStore } from './stores/main' // Asegúrate de que esta ruta es correcta
+import { useMainStore } from './stores/main'
 import logoImage from './assets/logoMEC.png'
 
 import './css/App.css'
@@ -48,14 +48,12 @@ const handleLogout = () => {
         <div v-if="mainStore.currentUser" class="dropdown-container">
           
           <div class="profile-circle" @click="toggleMenu" style="cursor: pointer; overflow: hidden; padding: 0; display: flex; align-items: center; justify-content: center;">
-            
             <img 
               v-if="mainStore.currentUser?.foto_url" 
               :src="mainStore.currentUser.foto_url" 
               style="width: 100%; height: 100%; object-fit: cover;"
               alt="Avatar"
             />
-            
             <span v-else>
               {{ mainStore.currentUser?.nombre_completo?.charAt(0).toUpperCase() || 'U' }}
             </span>
@@ -72,11 +70,6 @@ const handleLogout = () => {
             <router-link to="/profile" class="dropdown-item" @click="menuAbierto = false">
               👤 Mi Perfil
             </router-link>
-            
-            <button class="dropdown-item" @click="menuAbierto = false">
-              ⚙️ Configuración
-            </button>
-            
             <hr>
             
             <button class="dropdown-item logout-item" @click="handleLogout">
@@ -96,6 +89,26 @@ const handleLogout = () => {
         </router-link>
 
       </nav>
+
+      <button v-if="mainStore.currentUser" class="mobile-menu-btn" @click="toggleMenu">
+        ☰
+      </button>
+
+      <div v-if="menuAbierto && mainStore.currentUser" class="mobile-dropdown-menu">
+        <div class="dropdown-header">
+          <strong>{{ mainStore.currentUser?.nombre_completo || 'Usuario' }}</strong>
+          <span>{{ mainStore.currentUser?.email || '' }}</span>
+        </div>
+        <hr>
+        <router-link to="/profile/edit" class="dropdown-item" @click="menuAbierto = false">
+          ⚙️ Configuración
+        </router-link>
+        <hr>
+        <button class="dropdown-item logout-item" @click="handleLogout">
+          🚪 Cerrar Sesión
+        </button>
+      </div>
+
     </header>
 
     <router-view />

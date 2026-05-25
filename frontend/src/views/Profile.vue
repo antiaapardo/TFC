@@ -13,14 +13,23 @@ const mainStore = useMainStore()
 const mostrarModal = ref(false)
 const router = useRouter()
 
+const eventoAEditar = ref(null)
+
 onMounted(() => {
   if (!mainStore.eventos || mainStore.eventos.length === 0) {
     mainStore.fetchEventos()
   }
 })
+
+const handleLogout = () => {
+  mainStore.cerrarSesion()
+  router.push('/')
+}
+
 const irADetalle = (idEvento) => {
   router.push(`/evento/${idEvento}`)
 }
+
 const esOrganizador = computed(() => {
   return mainStore.currentUser?.tipo_usuario === 'organizador'
 })
@@ -36,6 +45,23 @@ const misEventos = computed(() => {
 const cargarEventos = async () => {
   await mainStore.fetchEventos()
   mostrarModal.value = false
+  eventoAEditar.value = null 
+}
+
+
+const abrirModalEdicion = (evento) => {
+  eventoAEditar.value = evento 
+  mostrarModal.value = true
+}
+
+const cerrarModal = () => {
+  mostrarModal.value = false
+  eventoAEditar.value = null
+}
+
+const abrirModalPublicarNuevo = () => {
+  eventoAEditar.value = null 
+  mostrarModal.value = true
 }
 
 const mostrarConfirmacion = ref(false)
@@ -56,13 +82,18 @@ const cancelarBorrado = () => {
 
 const confirmarBorrado = async () => {
   errorBorrado.value = ''
+  
   if (eventoABorrar.value) {
     const exito = await mainStore.eliminarEvento(eventoABorrar.value)
+    
     if (!exito) {
       errorBorrado.value = mainStore.lastError || "Hubo un problema al eliminar el mercadillo."
       return 
     }
+    
+    await mainStore.fetchEventos()
   }
+  
   mostrarConfirmacion.value = false
   eventoABorrar.value = null
 }
@@ -101,7 +132,7 @@ const confirmarBorrado = async () => {
       <template v-if="esOrganizador">
         <div class="content-header">
           <h3 class="section-title">Mis Mercadillos publicados</h3>
-          <BotonPublicar @click="mostrarModal = true" class="btn-custom-style" />
+          <BotonPublicar @click="abrirModalPublicarNuevo" class="btn-custom-style" />
         </div>
 
         <div class="events-grid">
@@ -112,6 +143,10 @@ const confirmarBorrado = async () => {
               @click="irADetalle(evento.id_evento)" 
             />
             
+            <button @click="abrirModalEdicion(evento)" class="btn-editar" style="background-color: #3b82f6; color: white; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; margin-bottom: 5px;">
+              ✏️ Editar Mercadillo
+            </button>
+
             <button @click="solicitarBorrado(evento.id_evento)" class="btn-eliminar">
               🗑️ Eliminar Mercadillo
             </button>
@@ -127,7 +162,6 @@ const confirmarBorrado = async () => {
         <div class="content-header">
           <h3 class="section-title">¡Hola, {{ mainStore.currentUser?.nombre_completo?.split(' ')[0] || 'Visitante' }}!</h3>
         </div>
-        
         <div class="welcome-panel">
           <div class="welcome-icon">🗺️</div>
           <div class="welcome-text">
@@ -146,7 +180,8 @@ const confirmarBorrado = async () => {
 
       <ModalPublicar 
         v-if="mostrarModal && esOrganizador" 
-        @close="mostrarModal = false" 
+        :eventoEditar="eventoAEditar" 
+        @close="cerrarModal" 
         @actualizar="cargarEventos" 
       />
 

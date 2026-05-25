@@ -73,18 +73,14 @@ h2 {
   background: #e0e0e0;
 }
 
-/* ==========================================
-   DISEÑO PARA MÓVILES (Pantallas < 768px)
-   ========================================== */
+
 @media (max-width: 768px) {
   
-  /* 1. Reducimos el relleno interno para ganar espacio y suavizamos los bordes */
   .verificar-card {
     padding: 30px 20px;
     border-radius: 16px;
   }
 
-  /* 2. Achicamos ligeramente el icono y los textos para que no se vean gigantes */
   .icono-estado span {
     font-size: 3rem;
     margin-bottom: 10px;
@@ -99,13 +95,11 @@ h2 {
     margin-bottom: 20px;
   }
 
-  /* 3. Ajustamos los botones para un toque táctil sin "saltos" */
   .btn-login, .btn-volver {
     padding: 12px;
     font-size: 1rem;
   }
 
-  /* Desactivamos el :hover del ratón para móviles */
   .btn-login:hover {
     background: #112A46;
   }
@@ -114,7 +108,6 @@ h2 {
     background: #f0f0f0;
   }
   
-  /* Añadimos el :active para que den un "feedback" visual justo al apretarlos con el dedo */
   .btn-login:active {
     background: #0a192a;
   }
