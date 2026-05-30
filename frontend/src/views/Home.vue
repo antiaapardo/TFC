@@ -6,6 +6,7 @@ import { UI_MESSAGES } from '../constants/mercadillos'
 import SearchBar from '../components/SearchBar.vue'
 import EventoCard from '../components/EventoCard.vue'
 import MapaInteractivo from '../components/MapaInteractivo.vue'
+import FooterMEC from '../components/FooterMEC.vue';
 
 import { useRouter } from 'vue-router'
 
@@ -166,5 +167,8 @@ const calcularDistanciaEnKm = (lat1, lon1, lat2, lon2) => {
         </aside>
       </template>
     </main>
+    
+    <FooterMEC />
+    
   </div>
 </template>
