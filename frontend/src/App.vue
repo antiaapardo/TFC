@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useMainStore } from './stores/main'
 import logoImage from './assets/logoMEC.png'
 
@@ -8,6 +8,7 @@ import './css/App.css'
 
 const mainStore = useMainStore()
 const router = useRouter()
+const route = useRoute()
 
 const menuAbierto = ref(false)
 
@@ -34,7 +35,7 @@ const handleLogout = () => {
         </div>
       </router-link>
       
-      <nav class="nav-user">
+      <nav class="nav-user" v-if="route.path !== '/login'">
         
         <router-link 
           to="/favoritos"

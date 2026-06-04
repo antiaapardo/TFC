@@ -1,10 +1,10 @@
-
 .footer-container {
   background-color: #2c3e50;
   color: #ffffff;
-  padding: 30px 15px 100px 15px; 
-  margin-top: 50px;
-  width: 100%;
+  padding: 15px 15px 80px 15px; 
+  margin-top: 40px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
   box-sizing: border-box; 
 }
 
@@ -12,26 +12,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 5px;
   text-align: center;
 }
 
 .brand h4 {
-  margin: 0 0 5px 0;
-  font-size: 1.2rem;
+  margin: 0;
+  font-size: 1.1rem;
 }
 
 .brand p {
-  margin: 0;
-  font-size: 0.85rem;
+  margin: 2px 0 0 0;
+  font-size: 0.8rem;
   color: #a0aab5;
 }
 
 .socials {
   display: flex;
   justify-content: center;
-  gap: 35px; 
-  margin-top: 10px;
+  gap: 30px; 
+  margin-top: 5px;
 }
 
 .social-link {
@@ -50,8 +50,8 @@
 }
 
 .social-icon {
-  width: 28px; 
-  height: 28px;
+  width: 24px; 
+  height: 24px;
 }
 
 .social-text {
@@ -59,6 +59,10 @@
 }
 
 @media (min-width: 768px) {
+  .footer-container {
+    padding: 20px 40px; /* Aquí reseteamos el padding gigante en PC */
+  }
+
   .footer-content {
     flex-direction: row;
     justify-content: space-between;
@@ -67,13 +71,13 @@
   }
   
   .social-icon {
-    width: 22px; 
-    height: 22px;
+    width: 20px; 
+    height: 20px;
   }
   
   .social-text {
     display: inline; 
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   
   .socials {

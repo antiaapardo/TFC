@@ -29,10 +29,6 @@ const misFavoritos = computed(() => {
       <h1 class="favoritos-title">
         Mis Mercadillos Favoritos ❤️
       </h1>
-      
-      <router-link to="/" class="volver-link">
-        ← Volver al inicio
-      </router-link>
     </div>
 
     <div v-if="misFavoritos.length === 0" class="favoritos-empty-state">

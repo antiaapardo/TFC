@@ -367,4 +367,4 @@ def change_password(id_usuario):
     return make_response(jsonify(res), code)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

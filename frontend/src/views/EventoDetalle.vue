@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
 import { CATEGORIAS_MEC } from '../constants/mercadillos'
+import FooterMEC from '../components/FooterMEC.vue';
 import noImagePlaceholder from '../assets/noImagen.png' 
 import '../css/EventoDetalle.css';
 
@@ -56,7 +57,15 @@ const infoCategoria = computed(() => {
 
 const formatearFecha = (fechaStr) => {
   if (!fechaStr) return ''
-  return new Date(fechaStr).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
+  const date = new Date(fechaStr)
+  
+  const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' }
+  const fecha = date.toLocaleDateString('es-ES', opcionesFecha)
+  
+  const opcionesHora = { hour: '2-digit', minute: '2-digit' }
+  const hora = date.toLocaleTimeString('es-ES', opcionesHora)
+  
+  return `${fecha} a las ${hora}`
 }
 
 const listaFotos = computed(() => {
@@ -83,12 +92,7 @@ const fotoAnterior = () => {
 
 <template>
   <div class="detalle-page">
-    
-    <div class="nav-top">
-      <button @click="router.back()" class="btn-back">
-        <span class="icon">←</span> Volver a explorar
-      </button>
-    </div>
+
 
     <div v-if="cargandoData" class="loading-state">
       ⏳ Cargando todos los detalles...
@@ -130,7 +134,7 @@ const fotoAnterior = () => {
           <div class="info-pill">
             <span class="emoji">🗓️</span>
             <div>
-              <strong>Fecha del evento</strong>
+              <strong>Fecha y hora del evento</strong>
               <p>{{ formatearFecha(evento.fecha_inicio) }}</p>
             </div>
           </div>
@@ -168,6 +172,6 @@ const fotoAnterior = () => {
     <div v-else class="error-state">
       ❌ No hemos podido encontrar este mercadillo.
     </div>
-
   </div>
+    <FooterMEC />
 </template>

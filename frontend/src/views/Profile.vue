@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import EventoCard from '../components/EventoCard.vue'
 import BotonPublicar from '../components/BotonPublicar.vue'
 import ModalPublicar from '../components/ModalPublicar.vue'
+import FooterMEC from '../components/FooterMEC.vue';
 
 import '../css/Profile.css'
 
@@ -198,4 +199,5 @@ const confirmarBorrado = async () => {
 
     </main>
   </div>
+  <FooterMEC />
 </template>

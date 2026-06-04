@@ -41,10 +41,11 @@ onMounted(() => {
   if (props.eventoEditar) {
     let fechaFormateada = ''
     if (props.eventoEditar.fecha_inicio) {
-      fechaFormateada = props.eventoEditar.fecha_inicio.split('T')[0] 
-
+      // Ajuste para extraer la fecha y la hora correctamente para el input datetime-local
       const dateObj = new Date(props.eventoEditar.fecha_inicio)
-      fechaFormateada = dateObj.toISOString().split('T')[0]
+      const tzOffset = dateObj.getTimezoneOffset() * 60000; 
+      const localISOTime = (new Date(dateObj.getTime() - tzOffset)).toISOString().slice(0, 16);
+      fechaFormateada = localISOTime;
     }
 
     Object.assign(form, {
@@ -194,7 +195,7 @@ const publicar = async () => {
 
         <div class="form-group">
           <label>FECHA DE INICIO</label>
-          <input v-model="form.fecha_inicio" type="date" required />
+          <input v-model="form.fecha_inicio" type="datetime-local" required />
         </div>
         
         <div class="form-group">

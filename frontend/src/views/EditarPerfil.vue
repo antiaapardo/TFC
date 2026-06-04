@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
 import ConfirmModal from '../components/ModalConfirm.vue'
+import FooterMEC from '../components/FooterMEC.vue'
 
 import '../css/EditarPerfil.css';
 import defaultAvatar from '../assets/noImagen.png' 
@@ -143,7 +144,7 @@ const handleChangePassword = async () => {
 <template>
   <div class="edit-profile-page">
     <div class="edit-header">
-      <button @click="router.back()" class="btn-back">← Volver al inicio </button>
+
       <h1>Editar mi perfil</h1>
     </div>
 
@@ -238,4 +239,5 @@ const handleChangePassword = async () => {
   @cancelar="mostrarModalFoto = false" 
 />
   </div>
+  <FooterMEC />
 </template>

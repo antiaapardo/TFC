@@ -34,7 +34,15 @@ const infoCategoria = computed(() => {
 
 const formatearFecha = (fechaStr) => {
   if (!fechaStr) return ''
-  return new Date(fechaStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+  const date = new Date(fechaStr)
+  
+  const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' }
+  const fecha = date.toLocaleDateString('es-ES', opcionesFecha)
+  
+  const opcionesHora = { hour: '2-digit', minute: '2-digit' }
+  const hora = date.toLocaleTimeString('es-ES', opcionesHora)
+  
+  return `${fecha} a las ${hora}`
 }
 
 const imagenPortada = computed(() => {
