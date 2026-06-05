@@ -357,7 +357,7 @@ def update_perfil(id_usuario):
     return make_response(jsonify(res), code)
 
 @app.route('/api/usuarios/<int:id_usuario>/password', methods=['PUT'])
-def change_password(id_usuario):
+def change_password_route(id_usuario):
     """Cambia la contraseña verificando la actual."""
     body = request.get_json(silent=True)
     password_actual = body.get('actual')
