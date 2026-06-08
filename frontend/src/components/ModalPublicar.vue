@@ -41,7 +41,6 @@ onMounted(() => {
   if (props.eventoEditar) {
     let fechaFormateada = ''
     if (props.eventoEditar.fecha_inicio) {
-      // Ajuste para extraer la fecha y la hora correctamente para el input datetime-local
       const dateObj = new Date(props.eventoEditar.fecha_inicio)
       const tzOffset = dateObj.getTimezoneOffset() * 60000; 
       const localISOTime = (new Date(dateObj.getTime() - tzOffset)).toISOString().slice(0, 16);

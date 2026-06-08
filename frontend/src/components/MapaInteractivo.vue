@@ -1,10 +1,13 @@
 <script setup>
 import { onMounted, onUnmounted, watch, markRaw } from 'vue';
+import { useRouter } from 'vue-router';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../css/MapaInteractivo.css';
 
 import { CATEGORIAS_MEC } from '../constants/mercadillos';
+
+const router = useRouter(); 
 
 const obtenerIconoPersonalizado = (colorHex) => {
   const svgHtml = `
@@ -56,6 +59,8 @@ const actualizarMarcadores = (listaEventos) => {
           const tituloEvento = evento.titulo || 'Mercadillo';
           const direccion = evento.direccion_texto || 'Dirección no especificada';
           
+          const idEvento = evento.event_id || evento.id_evento || evento.id;
+          
           let fechaTexto = '';
           if (evento.fecha_inicio) {
             const fechaObj = new Date(evento.fecha_inicio);
@@ -67,12 +72,23 @@ const actualizarMarcadores = (listaEventos) => {
           })
             .bindPopup(`
               <div class="custom-popup">
-                <strong class="popup-title" style="color: ${infoCat.color};">${tituloEvento}</strong><br>
+                <strong id="link-evento-${idEvento}" class="popup-title" style="color: ${infoCat.color}; cursor: pointer; text-decoration: underline;">
+                  ${tituloEvento}
+                </strong><br>
                 ${fechaTexto}
                 <small class="popup-address">📍 ${direccion}</small>
               </div>
             `);
           
+          marker.on('popupopen', () => {
+            const enlace = document.getElementById(`link-evento-${idEvento}`);
+            if (enlace) {
+              enlace.addEventListener('click', () => {
+                router.push(`/evento/${idEvento}`); 
+              });
+            }
+          });
+
           markerLayer.addLayer(marker);
         }
       }
